@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -28,5 +29,11 @@ class AdminController extends Controller
     public function adminLogin(): View|\Illuminate\Foundation\Application|Factory|Application
     {
         return view('admin.admin_login');
+    }
+    public function adminProfile(): View|\Illuminate\Foundation\Application|Factory|Application
+    {
+        $id = Auth::user()->id;
+        $findUser = User::find($id);
+        return view('admin.admin_profile_view', compact('findUser'));
     }
 }

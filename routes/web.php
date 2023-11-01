@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Route;
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
+|
+| These routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 |
 */
@@ -40,10 +40,12 @@ require __DIR__ . '/auth.php';
 // das ist hier, weil bei middleware('auth') die Authentifizierung geprüft wird, bevor die Route aufgerufen wird
 Route::get('/admin/login', [AdminController::class, 'adminLogin'])->name('admin.login');
 
+// Admin Group mit Middleware auth und role:admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // wenn man die URL /admin/dashboard aufruft, wird die Methode adminDashboard() im AdminController aufgerufen
     Route::get('/admin/dashboard', [AdminController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::get('/admin/logout', [AdminController::class, 'adminLogout'])->name('admin.logout');
+    Route::get('/admin/profile', [AdminController::class, 'adminProfile'])->name('admin.profile');
 });
 
 Route::middleware(['auth', 'role:company'])->group(function () {
