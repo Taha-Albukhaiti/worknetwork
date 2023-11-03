@@ -16,6 +16,7 @@ class AdminController extends Controller
     {
         return view('admin.index');
     }
+
     public function adminLogout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -26,22 +27,26 @@ class AdminController extends Controller
 
         return redirect('/admin/login');
     }
+
     public function adminLogin(): View|\Illuminate\Foundation\Application|Factory|Application
     {
         return view('admin.admin_login');
     }
+
     public function adminProfile(): View|\Illuminate\Foundation\Application|Factory|Application
     {
         $id = Auth::user()->id;
-        $findUser = User::find($id);
-        return view('admin.admin_profile_view', compact('findUser'));
+        $data = User::find($id);
+        return view('admin.admin_profile_view', compact('data'));
     }
+
     public function adminProfileEdit(): View|\Illuminate\Foundation\Application|Factory|Application
     {
         $id = Auth::user()->id;
-        $findUser = User::find($id);
-        return view('admin.admin_profile_edit_view', compact('findUser'));
+        $data= User::find($id);
+        return view('admin.admin_profile_edit_view', compact('data'));
     }
+
     public function adminProfileStore(Request $request)
     {
         $id = Auth::user()->id;
@@ -51,10 +56,10 @@ class AdminController extends Controller
         $data->email = $request->email;
         $data->phone = $request->phone;
 
-        if ($request->file('photo')){
+        if ($request->file('photo')) {
             $file = $request->file('photo');
-            @unlink(public_path('upload/admin_images/'.$data->photo));
-            $filename = date('YmdHi').$file->getClientOriginalName();
+            @unlink(public_path('upload/admin_images/' . $data->photo));
+            $filename = date('YmdHi') . $file->getClientOriginalName();
             $file->move(public_path('upload/admin_images'), $filename);
             $data['photo'] = $filename;
         }
@@ -65,5 +70,12 @@ class AdminController extends Controller
             'alert-type' => 'success'
         );
         return redirect()->back()->with($notification);
+    }
+
+    public function adminChangePassword()
+    {
+        $id = Auth::user()->id;
+        $data = User::find($id);
+        return view('admin.admin_change_password', compact('data'));
     }
 }
