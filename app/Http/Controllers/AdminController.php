@@ -36,6 +36,12 @@ class AdminController extends Controller
         $findUser = User::find($id);
         return view('admin.admin_profile_view', compact('findUser'));
     }
+    public function adminProfileEdit(): View|\Illuminate\Foundation\Application|Factory|Application
+    {
+        $id = Auth::user()->id;
+        $findUser = User::find($id);
+        return view('admin.admin_profile_edit_view', compact('findUser'));
+    }
     public function adminProfileStore(Request $request)
     {
         $id = Auth::user()->id;
