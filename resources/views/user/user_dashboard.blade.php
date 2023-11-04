@@ -45,7 +45,7 @@
 
     <!-- partial:partials/_sidebar.html -->
 
-    @include('admin.body.sidebar')
+    @include('user.body.sidebar')
 
     <!-- partial -->
 
@@ -53,15 +53,15 @@
 
         <!-- partial:partials/_navbar.html -->
 
-        @include('admin.body.header')
+        @include('user.body.header')
 
         <!-- partial -->
 
-        @yield('admin')
+        @yield('user')
 
         <!-- partial:partials/_footer.html -->
 
-        @include('admin.body.footer')
+        @include('user.body.footer')
 
         <!-- partial -->
 

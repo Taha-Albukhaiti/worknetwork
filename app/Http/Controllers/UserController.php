@@ -12,11 +12,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
-{  /**
- * Zeigt das Admin-Dashboard.
- *
- * @return View
- */
+{
+    /**
+     * Zeigt das Admin-Dashboard.
+     *
+     * @return View
+     */
     public function userDashboard(): View
     {
         return view('user.index');

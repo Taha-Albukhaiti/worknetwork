@@ -3,6 +3,7 @@
         <i data-feather="menu"></i>
     </a>
     <div class="navbar-content">
+        
         <form class="search-form">
             <div class="input-group">
                 <div class="input-group-text">
@@ -11,7 +12,9 @@
                 <input type="text" class="form-control" id="navbarForm" placeholder="Search here...">
             </div>
         </form>
+        
         <ul class="navbar-nav">
+            
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="appsDropdown" role="button" data-bs-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
@@ -53,6 +56,7 @@
                     </div>
                 </div>
             </li>
+            
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button"
                    data-bs-toggle="dropdown"
@@ -136,6 +140,7 @@
                     </div>
                 </div>
             </li>
+            
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
