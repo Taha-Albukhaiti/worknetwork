@@ -73,9 +73,8 @@
 
                             <h6 class="card-title">Admin Change Password</h6>
 
-                            <form method="post" action="{{ route('admin.profile.store') }}"
-                                  class="forms-sample" enctype="multipart/form-data">
-                                <!-- ohne enctype kann kein Bild uploadet-->
+                            <form method="post" action="{{ route('admin.update.password') }}"
+                                  class="forms-sample">
                                 @csrf
                                 <div class="mb-3">
                                     <label for="old_password" class="form-label">Old Password</label>
