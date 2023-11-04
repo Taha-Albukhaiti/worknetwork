@@ -38,7 +38,7 @@ require __DIR__ . '/auth.php';
 // Zuerst wird geprüft, ob der User authentifiziert ist, dann
 
 // das ist hier, weil bei middleware('auth') die Authentifizierung geprüft wird, bevor die Route aufgerufen wird
-Route::get('/admin/login', [AdminController::class, 'adminLogin'])->name('admin.login');
+Route::get('/user/login', [AdminController::class, 'adminLogin'])->name('admin.login');
 
 // Admin Group mit Middleware auth und role:admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -52,11 +52,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/update/password', [AdminController::class, 'adminUpdatePassword'])->name('admin.update.password');
 });
 
+
+Route::get('/user/login', [UserController::class, 'userLogin'])->name('user.login');
+
 Route::middleware(['auth', 'role:company'])->group(function () {
     Route::get('/company/dashboard', [CompanyController::class, 'companyDashboard'])->name('company.dashboard');
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'userDashboard'])->name('user.dashboard');
+    Route::get('/user/logout', [UserController::class, 'userLogout'])->name('user.logout');
+    Route::get('/user/profile', [UserController::class, 'userProfile'])->name('user.profile');
+    Route::get('/user/profile/edit', [UserController::class, 'userProfileEdit'])->name('user.profile.edit');
+    Route::get('/user/profile/change/password', [UserController::class, 'userChangePassword'])->name('user.profile.change.password');
+    Route::post('/user/profile/store', [UserController::class, 'userProfileStore'])->name('user.profile.store');
+    Route::post('/user/update/password', [UserController::class, 'userUpdatePassword'])->name('user.update.password');
 });
 
