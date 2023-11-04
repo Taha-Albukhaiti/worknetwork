@@ -13,11 +13,22 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    public function adminDashboard()
+    /**
+     * Zeigt das Admin-Dashboard.
+     *
+     * @return View
+     */
+    public function adminDashboard(): View
     {
         return view('admin.index');
     }
 
+    /**
+     * Meldet den Admin aus.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function adminLogout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -29,26 +40,47 @@ class AdminController extends Controller
         return redirect('/admin/login');
     }
 
-    public function adminLogin(): View|\Illuminate\Foundation\Application|Factory|Application
+    /**
+     * Zeigt das Admin-Anmeldeformular.
+     *
+     * @return View|Application|Factory
+     */
+    public function adminLogin(): View|Application|Factory
     {
         return view('admin.admin_login');
     }
 
-    public function adminProfile(): View|\Illuminate\Foundation\Application|Factory|Application
+    /**
+     * Zeigt das Admin-Profil.
+     *
+     * @return View|Application|Factory
+     */
+    public function adminProfile(): View|Application|Factory
     {
         $id = Auth::user()->id;
         $data = User::find($id);
         return view('admin.admin_profile_view', compact('data'));
     }
 
-    public function adminProfileEdit(): View|\Illuminate\Foundation\Application|Factory|Application
+    /**
+     * Zeigt das Admin-Profilbearbeitungsformular.
+     *
+     * @return View|Application|Factory
+     */
+    public function adminProfileEdit(): View|Application|Factory
     {
         $id = Auth::user()->id;
         $data = User::find($id);
         return view('admin.admin_profile_edit_view', compact('data'));
     }
 
-    public function adminProfileStore(Request $request)
+    /**
+     * Speichert die Änderungen am Admin-Profil.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function adminProfileStore(Request $request): RedirectResponse
     {
         $id = Auth::user()->id;
         $data = User::find($id);
@@ -67,20 +99,31 @@ class AdminController extends Controller
         $data->save();
 
         $notification = array(
-            'message' => 'Admin Profile Updated Successfully',
+            'message' => 'Admin Profile erfolgreich aktualisiert',
             'alert-type' => 'success'
         );
         return redirect()->back()->with($notification);
     }
 
-    public function adminChangePassword()
+    /**
+     * Zeigt das Formular zum Ändern des Admin-Passworts.
+     *
+     * @return View|Application|Factory
+     */
+    public function adminChangePassword(): View|Application|Factory
     {
         $id = Auth::user()->id;
         $data = User::find($id);
         return view('admin.admin_change_password', compact('data'));
     }
 
-    public function adminUpdatePassword(Request $request)
+    /**
+     * Aktualisiert das Admin-Passwort.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function adminUpdatePassword(Request $request): RedirectResponse
     {
         $validateData = $request->validate([
             'old_password' => 'required',
@@ -89,7 +132,7 @@ class AdminController extends Controller
 
         if (!Hash::check($request->old_password, auth::user()->password)) {
             $notification = array(
-                'message' => 'Old password does not match',
+                'message' => 'Das alte Passwort stimmt nicht überein',
                 'alert-type' => 'error'
             );
             return back()->with($notification);
@@ -97,12 +140,13 @@ class AdminController extends Controller
 
         User::whereId(Auth::user()->id)->update([
             'password' => Hash::make($request->new_password)
-
         ]);
+
         $notification = array(
-            'message' => 'Password Changed Successfully',
+            'message' => 'Passwort erfolgreich geändert',
             'alert-type' => 'success'
         );
+
         return back()->with($notification);
     }
 }
