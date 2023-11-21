@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,11 +21,22 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 //__________ Authentication  __________ //
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    if (Auth::check()) {
+        if (Auth::user()->role === 'admin') {
+            return view('admin.admin_dashboard');
+        } elseif (Auth::user()->role === 'user') {
+            return view('user.user_dashboard');
+        } elseif (Auth::user()->role === 'company') {
+            return view('company.company_dashboard');
+        }
+    }
+
+    // If the user is not authenticated or has no recognized role, render the default dashboard
+    return view('/welcome');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
