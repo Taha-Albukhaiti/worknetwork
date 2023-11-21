@@ -23,6 +23,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+Route::get('/calendar', function (){
+    return view('/pages/apps/calendar.html');
+})->name('calendar');
+
 //__________ Authentication  __________ //
 Route::get('/dashboard', function () {
     if (Auth::check()) {
