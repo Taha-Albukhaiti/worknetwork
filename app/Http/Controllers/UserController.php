@@ -37,7 +37,7 @@ class UserController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/user/login');
+        return redirect()->route('user.login');
     }
 
     /**
@@ -125,7 +125,7 @@ class UserController extends Controller
      */
     public function userUpdatePassword(Request $request): RedirectResponse
     {
-        $validateData = $request->validate([
+        $request->validate([
             'old_password' => 'required',
             'new_password' => 'required|confirmed'
         ]);

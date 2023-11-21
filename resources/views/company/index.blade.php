@@ -1,5 +1,5 @@
-@extends('user.user_dashboard')
-@section('user')
+@extends('company.company_dashboard')
+@section('company')
     <div class="page-content">
 
         <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
@@ -11,7 +11,6 @@
                     <span class="input-group-text input-group-addon bg-transparent border-primary" data-toggle><i data-feather="calendar" class="text-primary"></i></span>
                     <input type="text" class="form-control bg-transparent border-primary" placeholder="Select date" data-input>
                 </div>
-
             </div>
         </div>
 

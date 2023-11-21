@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -35,6 +36,7 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 //__________ Authentication End __________ //
 
+
 // Zuerst wird geprüft, ob der User authentifiziert ist, dann
 
 // das ist hier, weil bei middleware('auth') die Authentifizierung geprüft wird, bevor die Route aufgerufen wird
@@ -53,16 +55,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 
-
-Route::middleware(['auth', 'role:company'])->group(function () {
-    Route::get('/company/dashboard', [CompanyController::class, 'companyDashboard'])->name('company.dashboard');
-});
-
-
+//
 Route::get('/user/login', [UserController::class, 'userLogin'])->name('user.login');
 
+// User Group mit Middleware auth und role:user
 Route::middleware(['auth', 'role:user'])->group(function () {
-
     Route::get('/user/dashboard', [UserController::class, 'userDashboard'])->name('user.dashboard');
     Route::get('/user/logout', [UserController::class, 'userLogout'])->name('user.logout');
     Route::get('/user/profile', [UserController::class, 'userProfile'])->name('user.profile');
@@ -71,5 +68,16 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/user/profile/store', [UserController::class, 'userProfileStore'])->name('user.profile.store');
     Route::post('/user/update/password', [UserController::class, 'userUpdatePassword'])->name('user.update.password');
 
+});
+
+Route::get('/company/login', [CompanyController::class, 'companyLogin'])->name('company.login');
+Route::middleware(['auth', 'role:company'])->group(function () {
+    Route::get('/company/dashboard', [CompanyController::class, 'companyDashboard'])->name('company.dashboard');
+    Route::get('/company/logout', [CompanyController::class, 'companyLogout'])->name('company.logout');
+    Route::get('/company/profile', [CompanyController::class, 'companyProfile'])->name('company.profile');
+    Route::get('/company/profile/edit', [CompanyController::class, 'companyProfileEdit'])->name('company.profile.edit');
+    Route::get('/company/profile/change/password', [CompanyController::class, 'companyChangePassword'])->name('company.profile.change.password');
+    Route::post('/company/profile/store', [CompanyController::class, 'companyProfileStore'])->name('company.profile.store');
+    Route::post('/company/update/password', [CompanyController::class, 'companyUpdatePassword'])->name('company.update.password');
 });
 

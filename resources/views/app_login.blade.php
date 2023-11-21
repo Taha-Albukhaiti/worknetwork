@@ -64,7 +64,7 @@
                                        class="noble-ui-logo logo-light d-block mb-2">Work<span>Network</span></a>
                                     <h5 class="text-muted fw-normal mb-4">Welcome back! Log in to your account.</h5>
 
-                                    <form class="forms-sample" method="post" action="{{ route('login') }}">
+                                    <form class="forms-sample" method="post" action="{{ route('app_login') }}">
                                         @csrf
                                         <div class="mb-3">
                                             <label for="login" class="form-label">Email/Name/Phone</label>
