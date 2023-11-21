@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::defaults()],
-            'registration_type' => ['required', 'in:user,company'], // Hinzugefügtes Validierungsfeld für den Registrierungstyp
+            'registration_type' => ['required', 'in:user,company'],
         ]);
 
         $temp = '';
@@ -60,6 +60,21 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        // Überprüfen Sie die Rolle des Benutzers und leiten Sie entsprechend weiter
+        switch ($temp) {
+            case 'user':
+                $dashboardRoute = 'user.dashboard';
+                break;
+            case 'company':
+                $dashboardRoute = 'company.dashboard';
+                break;
+            case 'admin':
+                $dashboardRoute = 'admin.dashboard';
+                break;
+            default:
+                $dashboardRoute = 'dashboard';
+        }
+
+        return redirect()->route($dashboardRoute);
     }
 }
