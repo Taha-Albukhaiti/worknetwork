@@ -18,6 +18,7 @@
                     <span class="link-title">Home</span>
                 </a>
             </li>
+
             <li class="nav-item nav-category">web apps</li>
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#emails" role="button" aria-expanded="false"
@@ -40,7 +41,6 @@
                     </ul>
                 </div>
             </li>
-
             <li class="nav-item">
                 <a href="pages/apps/chat.html" class="nav-link">
                     <i class="link-icon" data-feather="message-square"></i>
@@ -48,72 +48,7 @@
                 </a>
             </li>
 
-            <li class="nav-item">
-                <a href="pages/apps/calendar.html" class="nav-link">
-                    <i class="link-icon" data-feather="calendar"></i>
-                    <span class="link-title">Calendar</span>
-                </a>
-            </li>
-
-            <li class="nav-item nav-category">Components</li>
-
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#uiComponents" role="button" aria-expanded="false"
-                   aria-controls="uiComponents">
-                    <i class="link-icon" data-feather="feather"></i>
-                    <span class="link-title">UI Kit</span>
-                    <i class="link-arrow" data-feather="chevron-down"></i>
-                </a>
-                <div class="collapse" id="uiComponents">
-                    <ul class="nav sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/ui-components/accordion.html" class="nav-link">Accordion</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/ui-components/alerts.html" class="nav-link">Alerts</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#advancedUI" role="button" aria-expanded="false"
-                   aria-controls="advancedUI">
-                    <i class="link-icon" data-feather="anchor"></i>
-                    <span class="link-title">Advanced UI</span>
-                    <i class="link-arrow" data-feather="chevron-down"></i>
-                </a>
-                <div class="collapse" id="advancedUI">
-                    <ul class="nav sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/advanced-ui/cropper.html" class="nav-link">Cropper</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/advanced-ui/owl-carousel.html" class="nav-link">Owl carousel</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-
             <li class="nav-item nav-category">Pages</li>
-
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" role="button" aria-expanded="false"
-                   aria-controls="general-pages">
-                    <i class="link-icon" data-feather="book"></i>
-                    <span class="link-title">Special pages</span>
-                    <i class="link-arrow" data-feather="chevron-down"></i>
-                </a>
-                <div class="collapse" id="general-pages">
-                    <ul class="nav sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/general/profile.html" class="nav-link">Profile</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#authPages" role="button" aria-expanded="false"
                    aria-controls="authPages">
@@ -126,15 +61,11 @@
                         <li class="nav-item">
                             <a href="{{route('admin.login')}}" class="nav-link">Login</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="pages/auth/register.html" class="nav-link">Register</a>
-                        </li>
                     </ul>
                 </div>
             </li>
 
             <li class="nav-item nav-category">Docs</li>
-
             <li class="nav-item">
                 <a href="#" target="_blank" class="nav-link">
                     <i class="link-icon" data-feather="hash"></i>

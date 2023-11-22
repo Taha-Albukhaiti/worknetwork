@@ -23,9 +23,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/calendar', function (){
-    return view('/pages/apps/calendar.html');
-})->name('calendar');
 
 //__________ Authentication  __________ //
 Route::get('/dashboard', function () {
@@ -51,13 +48,10 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 //__________ Authentication End __________ //
-
-
 // Zuerst wird geprüft, ob der User authentifiziert ist, dann
 
 // das ist hier, weil bei middleware('auth') die Authentifizierung geprüft wird, bevor die Route aufgerufen wird
 Route::get('/admin/login', [AdminController::class, 'adminLogin'])->name('admin.login');
-
 // Admin Group mit Middleware auth und role:admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // wenn man die URL /admin/dashboard aufruft, wird die Methode adminDashboard() im AdminController aufgerufen
@@ -70,10 +64,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/update/password', [AdminController::class, 'adminUpdatePassword'])->name('admin.update.password');
 });
 
-
-//
 Route::get('/user/login', [UserController::class, 'userLogin'])->name('user.login');
-
 // User Group mit Middleware auth und role:user
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'userDashboard'])->name('user.dashboard');
