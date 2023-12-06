@@ -65,11 +65,12 @@
                             </a>
                         </li>
                         <li class="dropdown-item py-2">
-                            <a href="javascript:;" class="text-body ms-0">
-                                <i class="me-2 icon-md" data-feather="repeat"></i>
-                                <span>Switch User</span>
+                            <a href="{{ route('user.portfolio') }}" class="text-body ms-0">
+                                <i class="me-2 icon-md" data-feather="edit"></i>
+                                <span>Make Portfolio</span>
                             </a>
                         </li>
+
                         <li class="dropdown-item py-2">
                             <a href="{{route('user.logout')}}" class="text-body ms-0">
                                 <i class="me-2 icon-md" data-feather="log-out"></i>
