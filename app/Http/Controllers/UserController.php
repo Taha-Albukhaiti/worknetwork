@@ -17,22 +17,12 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    /**
-     * Zeigt das Admin-Dashboard.
-     *
-     * @return View
-     */
+
     public function userDashboard(): View
     {
         return view('user.index');
     }
 
-    /**
-     * Meldet den User aus.
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function userLogout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -44,21 +34,12 @@ class UserController extends Controller
         return redirect()->route('user.login');
     }
 
-    /**
-     * Zeigt das User-Anmeldeformular.
-     *
-     * @return View|\Illuminate\Contracts\Foundation\Application|Factory
-     */
+
     public function userLogin(): View|Application|Factory
     {
         return view('user.user_login');
     }
 
-    /**
-     * Zeigt das User-Profil.
-     *
-     * @return View|Application|Factory
-     */
     public function userProfile(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -75,16 +56,13 @@ class UserController extends Controller
         return view('user.user_portfolio_view', compact('data', 'portfolios'));
     }
 
-    /**
-     * Zeigt das User-Profilbearbeitungsformular.
-     *
-     * @return View|Application|Factory
-     */
+
     public function userProfileEdit(): View|Application|Factory
     {
         $id = Auth::user()->id;
         $data = User::find($id);
-        $portfolios = $data->portfolios()->with('details')->get();
+        // die Portfolio-Daten des Users und die Portfolio-Details werden geladen
+        $portfolios = Portfolio::where('user_id', $id)->with('details')->first();
 
         return view('user.user_profile_edit_view', compact('data', 'portfolios'));
     }
@@ -92,51 +70,28 @@ class UserController extends Controller
     public function userPortfolioStore(Request $request): RedirectResponse
     {
         $id = Auth::user()->id;
-        Log::info('Received Portfolio Data:', [$request->input('portfolios')]);
-        Log::info('Request received:', ['data' => $request->all()]);
 
         DB::transaction(function () use ($id, $request) {
-            $portfolio = Portfolio::with('details')->firstOrNew(['user_id' => $id]);
-
+            $portfolio = Portfolio::firstOrNew(['user_id' => $id]);
             $portfolio->user_id = $id;
             $portfolio->job_title = $request->input('portfolios.job_title');
             $portfolio->company = $request->input('portfolios.company');
             $portfolio->start_date = $request->input('portfolios.start_date');
             $portfolio->end_date = $request->input('portfolios.end_date');
-
             $portfolio->save();
 
-            $details = $request->input('portfolios.details');
+            if ($portfolio->id) {
+                $details = $request->input('portfolios.details');
 
-            for ($i = 0; $i < count($details); $i += 2) {
-                $type = $details[$i]['type'] ?? null;
-                $content = $details[$i + 1]['content'] ?? null;
-
-                Log::info('Type: ' . $type);
-                Log::info('Content: ' . $content);
-
-                if (!is_null($type) && !is_null($content)) {
-                    $existingDetail = $portfolio->details()->where('type', $type)->first();
-
-                    if ($existingDetail) {
-                        Log::info('Detail vorhanden - Aktualisiere den Inhalt');
-                        $existingDetail->content = $content;
-                        $existingDetail->save();
-                    } else {
-                        Log::info('Detail nicht vorhanden - Erstelle ein neues Detail');
-                        $portfolio->details()->create([
-                            'portfolio_id' => $portfolio->id,
-                            'type' => $type,
-                            'content' => $content,
-                        ]);
-                    }
-                } else {
-                    Log::warning('Type und Content sind beide NULL');
+                foreach ($details as $detail) {
+                    $portfolioDetail = new PortfolioDetail();
+                    $portfolioDetail->portfolio_id = $portfolio->id;
+                    $portfolioDetail->type = $detail['type'];
+                    $portfolioDetail->content = $detail['content'];
+                    $portfolioDetail->save();
                 }
             }
         });
-
-        Log::info('Portfolio und Details erfolgreich gespeichert.');
 
         $notification = [
             'message' => 'Portfolio erfolgreich aktualisiert',
@@ -147,16 +102,6 @@ class UserController extends Controller
     }
 
 
-
-
-
-
-    /**
-     * Speichert die Änderungen am User-Profil.
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function userProfileStore(Request $request): RedirectResponse
     {
         $id = Auth::user()->id;
@@ -177,73 +122,39 @@ class UserController extends Controller
         $portfolio = Portfolio::with('details')->where('user_id', $id)->first();
 
         if ($request->has('portfolios')) {
-            foreach ($request->portfolios as $portfolioData) {
-                $portfolio = $data->portfolios()->find($portfolioData['id']);
+            $portfolio->job_title = $request->portfolios['job_title'];
+            $portfolio->company = $request->portfolios['company'];
+            $portfolio->start_date = $request->portfolios['start_date'];
+            $portfolio->end_date = $request->portfolios['end_date'];
+            $portfolio->details()->delete();
 
-                if ($portfolio) {
-                    $portfolio->job_title = $portfolioData['job_title'];
-                    $portfolio->company = $portfolioData['company'];
-                    $portfolio->start_date = $portfolioData['start_date'];
-                    $portfolio->end_date = $portfolioData['end_date'];
-                    $portfolio->save();
-                    // Überprüfen, ob 'details' im Portfolio vorhanden ist
-
-                    if (isset($portfolioData['details']) && is_array($portfolioData['details'])) {
-                        Log::info('Details vorhanden im Portfolio');
-                        foreach ($portfolioData['details'] as $detailData) {
-                            // Überprüfen, ob 'type' und 'content' in $detailData vorhanden sind
-                            if (isset($detailData['type']) && isset($detailData['content'])) {
-                                $type = $detailData['type'];
-                                $content = $detailData['content'];
-
-                                // Finde ein vorhandenes Detail nach Typ
-                                $existingDetail = $portfolio->details()->where('type', $type)->first();
-
-                                Log::info('Detailtyp: ' . $type);
-                                Log::info('Detailinhalt: ' . $content);
-
-                                if ($existingDetail) {
-                                    Log::info('Detail vorhanden - Aktualisiere den Inhalt');
-                                    $existingDetail->content = $content;
-                                    $existingDetail->save();
-                                } else {
-                                    Log::info('Detail nicht vorhanden - Erstelle ein neues Detail');
-                                    $portfolio->details()->create([
-                                        'portfolio_id' => $portfolio->id,
-                                        'type' => $type,
-                                        'content' => $content
-                                    ]);
-                                }
-                            } else {
-                                Log::warning('Details unvollständig - type und content müssen gesetzt sein');
-                            }
-                        }
+            if (isset($request->portfolios['details']) && is_array($request->portfolios['details'])) {
+                foreach ($request->portfolios['details'] as $detail) {
+                    if (isset($detail['type']) && isset($detail['content'])) {
+                        $portfolioDetail = new PortfolioDetail();
+                        $portfolioDetail->portfolio_id = $portfolio->id;
+                        $portfolioDetail->type = $detail['type'];
+                        $portfolioDetail->content = $detail['content'];
+                        $portfolioDetail->save();
                     } else {
-                        Log::warning('Details nicht gefunden im Portfolio');
+                        Log::info("--------------- Kein Type und Content ---------------");
                     }
                 }
             }
         }
 
-        if ($request->has('portfolios')) {
-            $portfolio->save();
-        }
-
+        $portfolio->save();
         $data->save();
 
-        $notification = array(
-            'message' => 'User Profile erfolgreich aktualisiert',
+        $notification = [
+            'message' => 'Benutzerprofil erfolgreich aktualisiert',
             'alert-type' => 'success'
-        );
+        ];
 
         return redirect()->back()->with($notification);
     }
 
-    /**
-     * Zeigt das Formular zum Ändern des User-Passworts.
-     *
-     * @return View|Application|Factory
-     */
+
     public function userChangePassword(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -251,12 +162,6 @@ class UserController extends Controller
         return view('user.user_change_password', compact('data'));
     }
 
-    /**
-     * Aktualisiert das User-Passwort.
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function userUpdatePassword(Request $request): RedirectResponse
     {
         $request->validate([
