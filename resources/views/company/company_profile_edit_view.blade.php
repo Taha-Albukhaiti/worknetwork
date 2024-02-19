@@ -15,7 +15,7 @@
                                 <img class="wd-100 rounded-circle"
                                      src=" {{ !empty($data->photo) ? url('upload/company_images/'.$data->photo) : url('upload/no_image.jpg')}}"
                                      alt="profile">
-                                <span class="h4 ms-3 ">{{ $data->username }}</span>
+                                <span class="h4 ms-3 ">{{ $data->company_name }}</span>
                             </div>
 
                             <div class="dropdown">
@@ -49,9 +49,21 @@
                         </div>
 
                         <div class="mt-3">
-                            <label class="tx-11 fw-bolder mb-0 text-uppercase">phone:</label>
+                            <label class="tx-11 fw-bolder mb-0 text-uppercase">Phone:</label>
                             <p class="text-muted">{{ $data->phone }}</p>
                         </div>
+
+                        <div class="mt-3">
+                            <label class="tx-11 fw-bolder mb-0 text-uppercase">Website:</label>
+                            <p class="text-muted">{{ $data->company_website }}</p>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="tx-11 fw-bolder mb-0 text-uppercase">Description:</label>
+                            <p class="text-muted">{{ $data->company_description }}</p>
+                        </div>
+
+
 
                         <div class="mt-3 d-flex social-links">
                             <a href="javascript:;" class="btn btn-icon border btn-xs me-2">
@@ -106,6 +118,56 @@
                                            autocomplete="off" value="{{ $data->phone }}">
                                 </div>
 
+                                <!-- Street -->
+                                <div class="mb-3">
+                                    <label for="street" class="form-label">Street:</label>
+                                    <input type="text" id="street" name="portfolios[street]" class="form-control"
+                                           value="{{ $portfolios->street ?? '' }}" required>
+                                </div>
+
+                                <!-- Street Number -->
+                                <div class="mb-3">
+                                    <label for="street_number" class="form-label">Street Number:</label>
+                                    <input type="text" id="street_number" name="portfolios[street_number]"
+                                           class="form-control" value="{{ $portfolios->street_number ?? '' }}"
+                                           required>
+                                </div>
+
+                                <!-- City -->
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">City:</label>
+                                    <input type="text" id="city" name="portfolios[city]" class="form-control"
+                                           value="{{ $portfolios->city ?? '' }}" required>
+                                </div>
+
+                                <!-- State -->
+                                <div class="mb-3">
+                                    <label for="state" class="form-label">State:</label>
+                                    <input type="text" id="state" name="portfolios[state]" class="form-control"
+                                           value="{{ $portfolios->state ?? '' }}" required>
+                                </div>
+
+                                <!-- Zipcode -->
+                                <div class="mb-3">
+                                    <label for="zipcode" class="form-label">Zipcode:</label>
+                                    <input type="text" id="zipcode" name="portfolios[zipcode]" class="form-control"
+                                           value="{{ $portfolios->zipcode ?? '' }}" required>
+                                </div>
+
+                                <!-- Company Website Link -->
+                                <div class="mb-3">
+                                    <label for="company_website" class="form-label">Company Website:</label>
+                                    <input type="text" id="company_website" name="company_website" class="form-control"
+                                           value="{{ $data->company_website ?? '' }}" required>
+                                </div>
+
+                                <!-- Company Description -->
+                                <div class="mb-3">
+                                    <label for="company_description" class="form-label">Company Description:</label>
+                                    <textarea id="company_description" name="company_description" class="form-control"
+                                              required>{{ $data->company_description ?? '' }}</textarea>
+                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label" for="formFile">File upload</label>
                                     <input class="form-control" name="photo" type="file" id="image">
@@ -130,20 +192,14 @@
     </div>
     <!-- partial:../../partials/_footer.html -->
     <script>
-        // Diese JavaScript-Funktion wird ausgeführt, wenn das Dokument vollständig geladen ist
         $(document).ready(function () {
-            // Wenn sich der Wert des Datei-Upload-Felds ändert
             $('#image').change(function (e) {
-                // Erstellt einen FileReader, um die ausgewählte Bilddatei zu lesen
                 let reader = new FileReader();
 
-                // Wird aufgerufen, wenn das Lesen der Datei abgeschlossen ist
                 reader.onload = function (e) {
-                    // Setzt die Quelle des Bildes im HTML auf die gelesenen Daten, um eine Vorschau anzuzeigen
                     $('#showImage').attr('src', e.target.result);
                 }
 
-                // Startet das Lesen der ausgewählten Datei als Daten-URL
                 reader.readAsDataURL(e.target.files['0']);
             });
         });

@@ -22,7 +22,8 @@
                 <div class="card-body">
                     <!-- Profilbild -->
                     <div class="text-center mb-4">
-                        <img class="wd-100 rounded-circle" src="{{ !empty($data->photo) ? url('upload/user_images/'.$data->photo) : url('upload/no_image.jpg')}}" alt="profile">
+                        <img class="wd-100 rounded-circle" src="{{ !empty($data->photo) ? url('upload/user_images/'.$data->photo) : url('upload/no_image.jpg')}}"
+                             alt="profile">
                     </div>
 
                     <h2 class="text-center mb-4"><strong>Portfolio</strong></h2>
@@ -33,15 +34,17 @@
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h2 class="card-title mb-4"><strong>Benutzerinformationen</strong></h2>
-                                    <p><strong>Username:</strong> {{ $data->username }}</p>
-                                    <p><strong>Name:</strong> {{ $data->name }}</p>
-                                    <p><strong>Email:</strong> {{ $data->email }}</p>
-                                    <p><strong>Phone:</strong> {{ $data->phone }}</p>
+                                    <p><strong>Username:</strong> {{ $data->username ?? '' }}</p>
+                                    <p><strong>Name:</strong> {{ $data->name ?? '' }}</p>
+                                    <p><strong>Email:</strong> {{ $data->email ?? '' }}</p>
+                                    <p><strong>Phone:</strong> {{ $data->phone ?? '' }}</p>
                                     <hr>
-                                    <p><strong>Adresse:</strong> {{ $portfolios->street }} {{ $portfolios->street_number }}</p>
-                                    <p><strong>PLZ:</strong> {{ $portfolios->zipcode }}</p>
-                                    <p><strong>Stadt:</strong> {{ $portfolios->city }}</p>
-                                    <p><strong>Land:</strong> {{ $portfolios->state }}</p>
+                                    <p>
+                                        <strong>Adresse:</strong> {{ $portfolios->street ?? '' }} {{ $portfolios->street_number ?? '' }}
+                                    </p>
+                                    <p><strong>PLZ:</strong> {{ $portfolios->zipcode ?? '' }}</p>
+                                    <p><strong>Stadt:</strong> {{ $portfolios->city ?? '' }}</p>
+                                    <p><strong>Land:</strong> {{ $portfolios->state ?? '' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -71,7 +74,8 @@
                                             <div class="row mb-3">
                                                 @foreach($portfolios->media()->where('type', 'image')->get() as $image)
                                                     <div class="col-md-6">
-                                                        <img src="{{ url('upload/portfolio_images/'.$image->filename) }}" alt="portfolio-image" class="img-fluid">
+                                                        <img src="{{ url('upload/portfolio_images/'.$image->filename) }}"
+                                                             alt="portfolio-image" class="img-fluid">
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -82,7 +86,8 @@
                                             <h4 class="mb-2">Zusätzliche Dateien:</h4>
                                             <ul>
                                                 @foreach($portfolios->media()->where('type', 'file')->get() as $file)
-                                                    <li><a href="{{ url('upload/portfolio_files/'.$file->filename) }}" target="_blank">{{ $file->filename }}</a></li>
+                                                    <li><a href="{{ url('upload/portfolio_files/'.$file->filename) }}"
+                                                           target="_blank">{{ $file->filename }}</a></li>
                                                 @endforeach
                                             </ul>
                                         @endif

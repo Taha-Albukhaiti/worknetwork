@@ -24,41 +24,74 @@
                                       class="forms-sample" enctype="multipart/form-data" id="portfolioForm">
                                     @csrf
 
+                                    <!-- User ID -->
+                                    <input type="hidden" name="portfolios[user_id]" value="{{ $data->id }}">
+
+                                    <!-- Username -->
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username:</label>
+                                        <input type="text" id="username" name="username" class="form-control"
+                                               value="{{ $data->username ?? '' }}" required>
+                                    </div>
+
+                                    <!-- Phone -->
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">Phone:</label>
+                                        <input type="text" id="phone" name="phone" class="form-control"
+                                               value="{{ $data->phone ?? '' }}" required>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email:</label>
+                                        <input type="email" id="email" name="email" class="form-control"
+                                               value="{{ $data->email ?? '' }}" required>
+                                    </div>
+
+                                    <!-- Address Section unabhängig vom Portfolio objekt-->
+                                    <label class="form-label"><h4>Address:</h4></label>
+                                    <!-- Address ID -->
+                                    <input type="hidden" name="address[address_id]"
+                                           value="{{ $address->id ?? '' }}">
+
                                     <!-- Street -->
                                     <div class="mb-3">
                                         <label for="street" class="form-label">Street:</label>
-                                        <input type="text" id="street" name="portfolios[street]" class="form-control"
-                                               value="{{ $portfolios->street ?? '' }}" required>
+                                        <input type="text" id="street" name="address[street]" class="form-control"
+                                               value="{{ $address->street ?? '' }}" required>
                                     </div>
 
                                     <!-- Street Number -->
                                     <div class="mb-3">
                                         <label for="street_number" class="form-label">Street Number:</label>
-                                        <input type="text" id="street_number" name="portfolios[street_number]"
-                                               class="form-control" value="{{ $portfolios->street_number ?? '' }}"
+                                        <input type="text" id="street_number" name="address[street_number]"
+                                               class="form-control" value="{{ $address->street_number ?? '' }}"
                                                required>
                                     </div>
 
                                     <!-- City -->
                                     <div class="mb-3">
                                         <label for="city" class="form-label">City:</label>
-                                        <input type="text" id="city" name="portfolios[city]" class="form-control"
-                                               value="{{ $portfolios->city ?? '' }}" required>
+                                        <input type="text" id="city" name="address[city]" class="form-control"
+                                               value="{{ $address->city ?? '' }}" required>
                                     </div>
 
                                     <!-- State -->
                                     <div class="mb-3">
                                         <label for="state" class="form-label">State:</label>
-                                        <input type="text" id="state" name="portfolios[state]" class="form-control"
-                                               value="{{ $portfolios->state ?? '' }}" required>
+                                        <input type="text" id="state" name="address[state]" class="form-control"
+                                               value="{{ $address->state ?? '' }}" required>
                                     </div>
 
                                     <!-- Zipcode -->
                                     <div class="mb-3">
-                                        <label for="zipcode" class="form-label">Zipcode:</label>
-                                        <input type="text" id="zipcode" name="portfolios[zipcode]" class="form-control"
-                                               value="{{ $portfolios->zipcode ?? '' }}" required>
+                                        <label for="zip" class="form-label">Zipcode:</label>
+                                        <input type="text" id="zip" name="address[zip]" class="form-control"
+                                               value="{{ $address->zip ?? '' }}" required>
                                     </div>
+
+                                    <!-- Portfolio ID -->
+                                    <input type="hidden" name="portfolios[id]" value="{{ $portfolios->id ?? '' }}">
 
                                     <!-- Job Title -->
                                     <div class="mb-3">
@@ -96,7 +129,8 @@
                                             <label class="form-label"><h4>Details:</h4></label>
                                             @foreach($portfolios->details as $index => $detail)
                                                 <div class="detailSet mb-3">
-                                                    <label class="form-label">Titel der Content: {{ $detail->type }}</label>
+                                                    <label class="form-label">Titel der
+                                                        Content: {{ $detail->type }}</label>
                                                     <input type="hidden" name="portfolios[details][{{ $index }}][id]"
                                                            value="{{ $detail->id }}">
                                                     <input type="text"
@@ -222,7 +256,6 @@
 
             detailIndex++;
         }
-
 
 
     </script>

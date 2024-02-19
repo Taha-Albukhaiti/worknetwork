@@ -13,22 +13,11 @@ use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
-    /**
-     * Zeigt das Company-Dashboard.
-     *
-     * @return View
-     */
     public function companyDashboard(): View
     {
         return view('company.index');
     }
 
-    /**
-     * Meldet den Company aus.
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function companyLogout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -40,21 +29,11 @@ class CompanyController extends Controller
         return redirect('/company/login');
     }
 
-    /**
-     * Zeigt das Company-Anmeldeformular.
-     *
-     * @return View|\Illuminate\Contracts\Foundation\Application|Factory
-     */
     public function companyLogin(): View|Application|Factory
     {
         return view('company.company_login');
     }
 
-    /**
-     * Zeigt das Company-Profil.
-     *
-     * @return View|Application|Factory
-     */
     public function companyProfile(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -62,11 +41,6 @@ class CompanyController extends Controller
         return view('company.company_profile_view', compact('data'));
     }
 
-    /**
-     * Zeigt das company-Profilbearbeitungsformular.
-     *
-     * @return View|Application|Factory
-     */
     public function companyProfileEdit(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -74,12 +48,6 @@ class CompanyController extends Controller
         return view('company.company_profile_edit_view', compact('data'));
     }
 
-    /**
-     * Speichert die Änderungen am company-Profil.
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function companyProfileStore(Request $request): RedirectResponse
     {
         $data = User::find(Auth::user()->id);
@@ -97,6 +65,7 @@ class CompanyController extends Controller
         }
         $data->save();
 
+
         $notification = array(
             'message' => 'Company Profile erfolgreich aktualisiert',
             'alert-type' => 'success'
@@ -104,11 +73,6 @@ class CompanyController extends Controller
         return redirect()->back()->with($notification);
     }
 
-    /**
-     * Zeigt das Formular zum Ändern des Company-Passworts.
-     *
-     * @return View|Application|Factory
-     */
     public function companyChangePassword(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -116,12 +80,6 @@ class CompanyController extends Controller
         return view('company.company_change_password', compact('data'));
     }
 
-    /**
-     * Aktualisiert das Company-Passwort.
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function companyUpdatePassword(Request $request): RedirectResponse
     {
         $request->validate([

@@ -14,11 +14,6 @@ return new class extends Migration {
             $table->string('company')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->string('street')->nullable();
-            $table->string('street_number')->nullable();
-            $table->string('city')->nullable();
-            $table->string('state')->nullable();
-            $table->string('zipcode')->nullable();
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\PortfolioMedia;
 use App\Models\User;
 use App\Models\Portfolio;
@@ -22,7 +23,8 @@ class UserController extends Controller
     {
         $data = $this->getUserData();
         $portfolios = $this->getPortfolios();
-        return view('user.index', compact('data', 'portfolios'));
+        $address = $this->getAddress();
+        return view('user.index', compact('data', 'portfolios', 'address'));
     }
 
     private function getPortfolios()
@@ -58,21 +60,30 @@ class UserController extends Controller
     public function userProfile(): View|Application|Factory
     {
         $data = $this->getUserData();
-        return view('user.user_profile_view', compact('data'));
+        $address = $this->getAddress();
+        return view('user.user_profile_view', compact('data', 'address'));
+    }
+
+    public function getAddress()
+    {
+        $id = Auth::user()->id;
+        return Address::where('user_id', $id)->first();
     }
 
     public function userPortfolio(): View|Application|Factory
     {
         $data = $this->getUserData();
         $portfolios = $data->portfolios()->with('details')->get()->first();
-        return view('user.user_portfolio_edit', compact('data', 'portfolios'));
+        $address = $this->getAddress();
+        return view('user.user_portfolio_edit', compact('data', 'portfolios', 'address'));
     }
 
     public function userProfileEdit(): View|Application|Factory
     {
         $data = $this->getUserData();
         $portfolios = Portfolio::where('user_id', $data->id)->with('details')->first();
-        return view('user.user_profile_edit_view', compact('data', 'portfolios'));
+        $address = $this->getAddress();
+        return view('user.user_profile_edit_view', compact('data', 'portfolios', 'address'));
     }
 
     public function userPortfolioStore(Request $request): RedirectResponse
@@ -81,6 +92,9 @@ class UserController extends Controller
 
         DB::transaction(function () use ($id, $request) {
             $data = User::find($id);
+            $data->username = $request->input('username');
+            $data->phone = $request->input('phone');
+            $data->email = $request->input('email');
 
             if ($request->file('photo')) {
                 $file = $request->file('photo');
@@ -90,16 +104,14 @@ class UserController extends Controller
                 $data->photo = $filename;
             }
 
+            $data->save();
+            $this->updateOrCreateAddress($id, $request);
+
             $portfolioData = [
                 'job_title' => $request->input('portfolios.job_title'),
                 'company' => $request->input('portfolios.company'),
                 'start_date' => $request->input('portfolios.start_date'),
                 'end_date' => $request->input('portfolios.end_date'),
-                'street' => $request->input('portfolios.street'),
-                'street_number' => $request->input('portfolios.street_number'),
-                'city' => $request->input('portfolios.city'),
-                'state' => $request->input('portfolios.state'),
-                'zipcode' => $request->input('portfolios.zipcode'),
             ];
 
             // Find existing portfolio or create a new one
@@ -155,8 +167,6 @@ class UserController extends Controller
             // Delete removed details
             $removedDetailIds = collect($request->input('removed_details'))->pluck('id');
             PortfolioDetail::whereIn('id', $removedDetailIds)->delete();
-
-            $data->save();
         });
 
         $notification = [
@@ -176,6 +186,9 @@ class UserController extends Controller
         $data->name = $request->name;
         $data->email = $request->email;
         $data->phone = $request->phone;
+        // Die Adresse Klasse ist mit user verknüpft und hat als Fremdschlüssel die user_id
+        $this->updateOrCreateAddress($id, $request);
+
 
         if ($request->file('photo')) {
             $file = $request->file('photo');
@@ -193,11 +206,6 @@ class UserController extends Controller
             $portfolio->company = $request->input('portfolios.company');
             $portfolio->start_date = $request->input('portfolios.start_date');
             $portfolio->end_date = $request->input('portfolios.end_date');
-            $portfolio->street = $request->input('portfolios.street');
-            $portfolio->street_number = $request->input('portfolios.street_number');
-            $portfolio->city = $request->input('portfolios.city');
-            $portfolio->state = $request->input('portfolios.state');
-            $portfolio->zipcode = $request->input('portfolios.zipcode');
             $portfolio->save();
 
             $details = $request->input('portfolios.details');
@@ -224,11 +232,6 @@ class UserController extends Controller
             $portfolio->company = $request->input('portfolios.company');
             $portfolio->start_date = $request->input('portfolios.start_date');
             $portfolio->end_date = $request->input('portfolios.end_date');
-            $portfolio->street = $request->input('portfolios.street');
-            $portfolio->street_number = $request->input('portfolios.street_number');
-            $portfolio->city = $request->input('portfolios.city');
-            $portfolio->state = $request->input('portfolios.state');
-            $portfolio->zipcode = $request->input('portfolios.zipcode');
         }
 
         $portfolio->save();
@@ -274,5 +277,26 @@ class UserController extends Controller
         );
 
         return back()->with($notification);
+    }
+
+    /**
+     * @param $id
+     * @param Request $request
+     * @return void
+     */
+    public function updateOrCreateAddress($id, Request $request): void
+    {
+        // finde heraus, ob der user schon eine address hat, wenn ja und es zu updaten gibt, dann mach das, ansonsten erstelle für ihn eine neue Adresse
+        $addressData = [
+            'street' => $request->input('address.street'),
+            'street_number' => $request->input('address.street_number'),
+            'city' => $request->input('address.city'),
+            'state' => $request->input('address.state'),
+            'zip' => $request->input('address.zip')
+        ];
+
+
+        $address = Address::updateOrCreate(['user_id' => $id], $addressData);
+        $address->save();
     }
 }

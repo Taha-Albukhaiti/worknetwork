@@ -43,30 +43,19 @@
 </head>
 <body>
 <div class="main-wrapper">
-
     <!-- partial:partials/_sidebar.html -->
-
     @include('user.body.sidebar')
 
     <!-- partial -->
-
     <div class="page-wrapper">
-
         <!-- partial:partials/_navbar.html -->
-
         @include('user.body.header')
 
         <!-- partial -->
-
         @yield('user')
 
-
         <!-- partial:partials/_footer.html -->
-
         @include('user.body.footer')
-
-        <!-- partial -->
-
     </div>
 </div>
 
