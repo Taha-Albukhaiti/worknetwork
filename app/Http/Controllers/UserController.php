@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PortfolioMedia;
 use App\Models\User;
 use App\Models\Portfolio;
 use App\Models\PortfolioDetail;
@@ -17,10 +18,17 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-
     public function userDashboard(): View
     {
-        return view('user.index');
+        $data = $this->getUserData();
+        $portfolios = $this->getPortfolios();
+        return view('user.index', compact('data', 'portfolios'));
+    }
+
+    private function getPortfolios()
+    {
+        $id = Auth::user()->id;
+        return Portfolio::where('user_id', $id)->with('details')->first();
     }
 
     public function userLogout(Request $request): RedirectResponse
@@ -40,30 +48,30 @@ class UserController extends Controller
         return view('user.user_login');
     }
 
-    public function userProfile(): View|Application|Factory
+    private function getUserData(): User
     {
         $id = Auth::user()->id;
-        $data = User::find($id);
+        return User::find($id);
+    }
+
+
+    public function userProfile(): View|Application|Factory
+    {
+        $data = $this->getUserData();
         return view('user.user_profile_view', compact('data'));
     }
 
     public function userPortfolio(): View|Application|Factory
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
-        $portfolios = $data->portfolios()->with('details')->get();
-
-        return view('user.user_portfolio_view', compact('data', 'portfolios'));
+        $data = $this->getUserData();
+        $portfolios = $data->portfolios()->with('details')->get()->first();
+        return view('user.user_portfolio_edit', compact('data', 'portfolios'));
     }
-
 
     public function userProfileEdit(): View|Application|Factory
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
-        // die Portfolio-Daten des Users und die Portfolio-Details werden geladen
-        $portfolios = Portfolio::where('user_id', $id)->with('details')->first();
-
+        $data = $this->getUserData();
+        $portfolios = Portfolio::where('user_id', $data->id)->with('details')->first();
         return view('user.user_profile_edit_view', compact('data', 'portfolios'));
     }
 
@@ -72,18 +80,44 @@ class UserController extends Controller
         $id = Auth::user()->id;
 
         DB::transaction(function () use ($id, $request) {
-            $portfolio = Portfolio::firstOrNew(['user_id' => $id]);
-            $portfolio->user_id = $id;
-            $portfolio->job_title = $request->input('portfolios.job_title');
-            $portfolio->company = $request->input('portfolios.company');
-            $portfolio->start_date = $request->input('portfolios.start_date');
-            $portfolio->end_date = $request->input('portfolios.end_date');
-            $portfolio->save();
+            $data = User::find($id);
 
-            if ($portfolio->id) {
-                $details = $request->input('portfolios.details');
+            if ($request->file('photo')) {
+                $file = $request->file('photo');
+                @unlink(public_path('upload/user_images/' . $data->photo));
+                $filename = date('YmdHi') . $file->getClientOriginalName();
+                $file->move(public_path('upload/user_images'), $filename);
+                $data->photo = $filename;
+            }
 
-                foreach ($details as $detail) {
+            $portfolioData = [
+                'job_title' => $request->input('portfolios.job_title'),
+                'company' => $request->input('portfolios.company'),
+                'start_date' => $request->input('portfolios.start_date'),
+                'end_date' => $request->input('portfolios.end_date'),
+                'street' => $request->input('portfolios.street'),
+                'street_number' => $request->input('portfolios.street_number'),
+                'city' => $request->input('portfolios.city'),
+                'state' => $request->input('portfolios.state'),
+                'zipcode' => $request->input('portfolios.zipcode'),
+            ];
+
+            // Find existing portfolio or create a new one
+            $portfolio = Portfolio::updateOrCreate(['user_id' => $id], $portfolioData);
+
+            // Save or update portfolio details
+            $details = $request->input('portfolios.details');
+            foreach ($details as $detail) {
+                if (isset($detail['id'])) {
+                    // If detail has an ID, update it
+                    $portfolioDetail = PortfolioDetail::find($detail['id']);
+                    if ($portfolioDetail) {
+                        $portfolioDetail->type = $detail['type'];
+                        $portfolioDetail->content = $detail['content'];
+                        $portfolioDetail->save();
+                    }
+                } else {
+                    // If detail does not have an ID, create it
                     $portfolioDetail = new PortfolioDetail();
                     $portfolioDetail->portfolio_id = $portfolio->id;
                     $portfolioDetail->type = $detail['type'];
@@ -91,6 +125,38 @@ class UserController extends Controller
                     $portfolioDetail->save();
                 }
             }
+
+            // Hochgeladene Bilder verarbeiten und speichern
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $filename = date('YmdHi') . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('upload/portfolio_images'), $filename);
+                    $portfolioMedia = new PortfolioMedia();
+                    $portfolioMedia->portfolio_id = $portfolio->id;
+                    $portfolioMedia->type = 'image';
+                    $portfolioMedia->filename = $filename;
+                    $portfolioMedia->save();
+                }
+            }
+
+            // Hochgeladene Dateien verarbeiten und speichern
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $filename = date('YmdHi') . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('upload/portfolio_files'), $filename);
+                    $portfolioMedia = new PortfolioMedia();
+                    $portfolioMedia->portfolio_id = $portfolio->id;
+                    $portfolioMedia->type = 'file';
+                    $portfolioMedia->filename = $filename;
+                    $portfolioMedia->save();
+                }
+            }
+
+            // Delete removed details
+            $removedDetailIds = collect($request->input('removed_details'))->pluck('id');
+            PortfolioDetail::whereIn('id', $removedDetailIds)->delete();
+
+            $data->save();
         });
 
         $notification = [
@@ -120,27 +186,49 @@ class UserController extends Controller
         }
 
         $portfolio = Portfolio::with('details')->where('user_id', $id)->first();
+        // Save or update portfolio details if they exist with out duplicating
 
-        if ($request->has('portfolios')) {
-            $portfolio->job_title = $request->portfolios['job_title'];
-            $portfolio->company = $request->portfolios['company'];
-            $portfolio->start_date = $request->portfolios['start_date'];
-            $portfolio->end_date = $request->portfolios['end_date'];
-            $portfolio->details()->delete();
+        if ($portfolio) {
+            $portfolio->job_title = $request->input('portfolios.job_title');
+            $portfolio->company = $request->input('portfolios.company');
+            $portfolio->start_date = $request->input('portfolios.start_date');
+            $portfolio->end_date = $request->input('portfolios.end_date');
+            $portfolio->street = $request->input('portfolios.street');
+            $portfolio->street_number = $request->input('portfolios.street_number');
+            $portfolio->city = $request->input('portfolios.city');
+            $portfolio->state = $request->input('portfolios.state');
+            $portfolio->zipcode = $request->input('portfolios.zipcode');
+            $portfolio->save();
 
-            if (isset($request->portfolios['details']) && is_array($request->portfolios['details'])) {
-                foreach ($request->portfolios['details'] as $detail) {
-                    if (isset($detail['type']) && isset($detail['content'])) {
-                        $portfolioDetail = new PortfolioDetail();
-                        $portfolioDetail->portfolio_id = $portfolio->id;
+            $details = $request->input('portfolios.details');
+            foreach ($details as $detail) {
+                if (isset($detail['id'])) {
+                    $portfolioDetail = PortfolioDetail::find($detail['id']);
+                    if ($portfolioDetail) {
                         $portfolioDetail->type = $detail['type'];
                         $portfolioDetail->content = $detail['content'];
                         $portfolioDetail->save();
-                    } else {
-                        Log::info("--------------- Kein Type und Content ---------------");
                     }
+                } else {
+                    $portfolioDetail = new PortfolioDetail();
+                    $portfolioDetail->portfolio_id = $portfolio->id;
+                    $portfolioDetail->type = $detail['type'];
+                    $portfolioDetail->content = $detail['content'];
+                    $portfolioDetail->save();
                 }
             }
+        } else {
+            $portfolio = new Portfolio();
+            $portfolio->user_id = $id;
+            $portfolio->job_title = $request->input('portfolios.job_title');
+            $portfolio->company = $request->input('portfolios.company');
+            $portfolio->start_date = $request->input('portfolios.start_date');
+            $portfolio->end_date = $request->input('portfolios.end_date');
+            $portfolio->street = $request->input('portfolios.street');
+            $portfolio->street_number = $request->input('portfolios.street_number');
+            $portfolio->city = $request->input('portfolios.city');
+            $portfolio->state = $request->input('portfolios.state');
+            $portfolio->zipcode = $request->input('portfolios.zipcode');
         }
 
         $portfolio->save();
@@ -153,7 +241,6 @@ class UserController extends Controller
 
         return redirect()->back()->with($notification);
     }
-
 
     public function userChangePassword(): View|Application|Factory
     {

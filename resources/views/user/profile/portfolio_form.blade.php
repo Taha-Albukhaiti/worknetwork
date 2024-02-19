@@ -2,7 +2,7 @@
     <div class="row">
         <div class="card">
             <div class="card-body">
-                <h6 class="card-title">Update Admin Profile</h6>
+                <h6 class="card-title">User Profile</h6>
 
                 <form method="post" action="{{ route('user.profile.store') }}" class="forms-sample"
                       enctype="multipart/form-data">
@@ -43,13 +43,40 @@
                              alt="profile">
                     </div>
 
-                    <!-- Portfolio -->
+
                     <!-- Portfolio -->
                     <div class="mb-3">
                         <h5>Portfolio</h5>
 
                         @if($portfolios)
                             <input type="text" name="portfolios[id]" value="{{ $portfolios->id }}" hidden>
+
+                        <!-- Portfolio-Address -->
+                            <div class="mb-3">
+                                <label for="street" class="form-label">Street</label>
+                                <input type="text" class="form-control" id="street" name="portfolios[street]" value="{{ $portfolios->street ?? '' }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="street_number" class="form-label">Street Number</label>
+                                <input type="text" class="form-control" id="street_number" name="portfolios[street_number]" value="{{ $portfolios->street_number ?? '' }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="zipcode" class="form-label">Zipcode</label>
+                                <input type="text" class="form-control" id="zipcode" name="portfolios[zipcode]" value="{{ $portfolios->zipcode ?? '' }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="portfolios[city]" value="{{ $portfolios->city ?? '' }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="portfolios[state]" value="{{ $portfolios->state ?? '' }}">
+
+                            </div>
                             <div class="mb-3">
                                 <label for="job_title" class="form-label">Job Title</label>
                                 <input type="text" class="form-control" id="job_title" name="portfolios[job_title]" value="{{ $portfolios->job_title ?? '' }}">
@@ -71,18 +98,27 @@
                             </div>
 
                             <!-- Portfolio-Details -->
-                            <!-- Portfolio-Details -->
-                            @foreach($portfolios->details as $index => $detail)
-                                <div class="mb-3">
-                                    <label for="type_{{ $index }}" class="form-label">Type</label>
-                                    <input type="text" class="form-control" id="type_{{ $index }}" name="portfolios[details][{{ $index }}][type]" value="{{ $detail->type ?? '' }}">
+                            <!-- Details Section -->
+                            @if($portfolios && isset($portfolios->details) && count($portfolios->details) > 0)
+                                <!-- Display Details Section -->
+                                <div class="mb-3" id="detailsContainer">
+                                    <label class="form-label"><h4>Details:</h4></label>
+                                    @foreach($portfolios->details as $index => $detail)
+                                        <div class="detailSet mb-3">
+                                            <label class="form-label">Titel der Content: {{ $detail->type }}</label>
+                                            <input type="hidden" name="portfolios[details][{{ $index }}][id]"
+                                                   value="{{ $detail->id }}">
+                                            <input type="text"
+                                                   name="portfolios[details][{{ $index }}][type]"
+                                                   value="{{ $detail->type }}" class="form-control">
+                                            <label class="form-label mb-2">Content</label>
+                                            <textarea name="portfolios[details][{{ $index }}][content]"
+                                                      class="form-control"
+                                                      required>{{ $detail->content }}</textarea>
+                                        </div>
+                                    @endforeach
                                 </div>
-                                <div class="mb-3">
-                                    <label for="content_{{ $index }}" class="form-label">Content</label>
-                                    <input type="text" class="form-control" id="content_{{ $index }}" name="portfolios[details][{{ $index }}][content]" value="{{ $detail->content ?? '' }}">
-                                </div>
-                            @endforeach
-
+                            @endif
 
                         @else
                             <p>Noch kein Portfolio vorhanden.</p>

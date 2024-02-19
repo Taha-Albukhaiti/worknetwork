@@ -9,7 +9,7 @@ return new class extends Migration {
         Schema::create('portfolio_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('portfolio_id')->constrained();
-            $table->enum('type', ['responsibility', 'achievement', 'skill', 'description'])->nullable();
+            $table->string('type')->nullable();
             $table->text('content')->nullable();
             $table->timestamps();
         });

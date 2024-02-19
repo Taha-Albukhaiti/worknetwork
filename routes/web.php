@@ -30,7 +30,7 @@ Route::get('/dashboard', function () {
         if (Auth::user()->role === 'admin') {
             return view('admin.admin_dashboard');
         } elseif (Auth::user()->role === 'user') {
-            return view('user.user_dashboard');
+            return route('user.dashboard');
         } elseif (Auth::user()->role === 'company') {
             return view('company.company_dashboard');
         }

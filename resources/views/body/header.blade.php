@@ -6,7 +6,7 @@
                 <div class="fixed-md-bottom p-4 text-right">
                     @if (Route::has('login'))
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="btn btn-primary">Dashboard</a>
+                            <a href="{{ route('user.dashboard') }}" class="btn btn-primary"><span>Dashboard</span></a>
                         @else
                             <a href="{{ route('login') }}" class="btn btn-outline-primary">Log in</a>
 

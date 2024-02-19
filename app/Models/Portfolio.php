@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
+/**
+ * @method static where(string $string, mixed $id)
+ */
 class Portfolio extends Model
 {
     use HasFactory;
@@ -20,5 +23,10 @@ class Portfolio extends Model
     public function details(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PortfolioDetail::class);
+    }
+
+    public function media()
+    {
+        return $this->hasMany(PortfolioMedia::class);
     }
 }

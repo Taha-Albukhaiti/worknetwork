@@ -1,3 +1,4 @@
+<!-- user_dashboard.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,6 +59,7 @@
         <!-- partial -->
 
         @yield('user')
+
 
         <!-- partial:partials/_footer.html -->
 

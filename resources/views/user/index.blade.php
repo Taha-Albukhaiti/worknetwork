@@ -1,3 +1,5 @@
+<!-- index.blade.php -->
+
 @extends('user.user_dashboard')
 @section('user')
     <div class="page-content">
@@ -14,6 +16,9 @@
 
             </div>
         </div>
+
+            @include('user.portfolio')
+
 
     </div>
 @endsection
