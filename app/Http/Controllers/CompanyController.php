@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
+use App\Models\CompanyProfile;
 use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -15,7 +17,10 @@ class CompanyController extends Controller
 {
     public function companyDashboard(): View
     {
-        return view('company.index');
+        $data = User::find(Auth::user()->id);
+        $address = $this->getAddress();
+        $companyProfile = CompanyProfile::where('user_id', Auth::user()->id)->first();
+        return view('company.index', compact('data', 'address', 'companyProfile'));
     }
 
     public function companyLogout(Request $request): RedirectResponse
@@ -32,45 +37,6 @@ class CompanyController extends Controller
     public function companyLogin(): View|Application|Factory
     {
         return view('company.company_login');
-    }
-
-    public function companyProfile(): View|Application|Factory
-    {
-        $id = Auth::user()->id;
-        $data = User::find($id);
-        return view('company.company_profile_view', compact('data'));
-    }
-
-    public function companyProfileEdit(): View|Application|Factory
-    {
-        $id = Auth::user()->id;
-        $data = User::find($id);
-        return view('company.company_profile_edit_view', compact('data'));
-    }
-
-    public function companyProfileStore(Request $request): RedirectResponse
-    {
-        $data = User::find(Auth::user()->id);
-        $data->username = $request->username;
-        $data->name = $request->name;
-        $data->email = $request->email;
-        $data->phone = $request->phone;
-
-        if ($request->file('photo')) {
-            $file = $request->file('photo');
-            @unlink(public_path('upload/user_images/' . $data->photo));
-            $filename = date('YmdHi') . $file->getClientOriginalName();
-            $file->move(public_path('upload/company_images'), $filename);
-            $data['photo'] = $filename;
-        }
-        $data->save();
-
-
-        $notification = array(
-            'message' => 'Company Profile erfolgreich aktualisiert',
-            'alert-type' => 'success'
-        );
-        return redirect()->back()->with($notification);
     }
 
     public function companyChangePassword(): View|Application|Factory
@@ -105,5 +71,84 @@ class CompanyController extends Controller
         );
 
         return back()->with($notification);
+    }
+
+
+    public function companyProfile(): View|Application|Factory
+    {
+        $id = Auth::user()->id;
+        $data = User::find($id);
+        $address = $this->getAddress();
+        $companyProfile = CompanyProfile::where('user_id', $id)->first();
+        return view('company.company_profile_view', compact('data', 'address', 'companyProfile'));
+    }
+
+    public function companyProfileEdit(): View|Application|Factory
+    {
+        $id = Auth::user()->id;
+        $data = User::find($id);
+        $companyProfile = CompanyProfile::where('user_id', $id)->first();
+        $address = $this->getAddress();
+        return view('company.company_profile_edit_view', compact('data', 'address', 'companyProfile'));
+    }
+
+    public function companyProfileStore(Request $request): RedirectResponse
+    {
+        $id = Auth::user()->id;
+        $data = User::find($id);
+        $data->username = $request->username;
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->phone = $request->phone;
+
+        if ($request->file('photo')) {
+            $file = $request->file('photo');
+            @unlink(public_path('upload/user_images/' . $data->photo));
+            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $file->move(public_path('upload/company_images'), $filename);
+            $data['photo'] = $filename;
+        }
+        $data->save();
+
+        $this->updateOrCreateAddress($id, $request);
+        $this->updateOrCreateCompanyProfile($id, $request);
+
+        $notification = array(
+            'message' => 'Company Profile erfolgreich aktualisiert',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
+    }
+
+    public function getAddress()
+    {
+        $id = Auth::user()->id;
+        return Address::where('user_id', $id)->first();
+    }
+
+    public function updateOrCreateAddress($id, Request $request): Address
+    {
+        $addressData = [
+            'street' => $request->input('address.street'),
+            'street_number' => $request->input('address.street_number'),
+            'city' => $request->input('address.city'),
+            'state' => $request->input('address.state'),
+            'zip' => $request->input('address.zip')
+        ];
+
+        $address = Address::updateOrCreate(['user_id' => $id], $addressData);
+        $address->save();
+        return $address;
+    }
+
+    private function updateOrCreateCompanyProfile($id, Request $request): void
+    {
+        $companyProfileData = [
+            'company_website' => $request->input('companyProfile.company_website'),
+            'company_description' => $request->input('companyProfile.company_description')
+        ];
+
+        $companyProfile = CompanyProfile::updateOrCreate(['user_id' => $id], $companyProfileData);
+        $companyProfile->save();
     }
 }

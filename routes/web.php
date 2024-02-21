@@ -26,16 +26,16 @@ Route::get('/', function () {
 
 //__________ Authentication  __________ //
 Route::get('/dashboard', function () {
+    // If the user is authenticated and has a recognized role, render the appropriate dashboard
     if (Auth::check()) {
-        if (Auth::user()->role === 'admin') {
-            return view('admin.admin_dashboard');
-        } elseif (Auth::user()->role === 'user') {
-            return route('user.dashboard');
-        } elseif (Auth::user()->role === 'company') {
-            return view('company.company_dashboard');
+        if (Auth::user()->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        } elseif (Auth::user()->hasRole('user')) {
+            return redirect()->route('user.dashboard');
+        } elseif (Auth::user()->hasRole('company')) {
+            return redirect()->route('company.dashboard');
         }
     }
-
     // If the user is not authenticated or has no recognized role, render the default dashboard
     return view('/welcome');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -73,7 +73,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user/profile/edit', [UserController::class, 'userProfileEdit'])->name('user.profile.edit');
     Route::get('/user/profile/change/password', [UserController::class, 'userChangePassword'])->name('user.profile.change.password');
     Route::get('/user/portfolio', [UserController::class, 'userPortfolio'])->name('user.portfolio');
-    Route::match(['post', 'put'],'/user/profile/store', [UserController::class, 'userProfileStore'])->name('user.profile.store');
+    Route::match(['post', 'put'], '/user/profile/store', [UserController::class, 'userProfileStore'])->name('user.profile.store');
     Route::post('/user/update/password', [UserController::class, 'userUpdatePassword'])->name('user.update.password');
     Route::post('user/portfolio/store', [UserController::class, 'userPortfolioStore'])->name('user.portfolio.store');
 

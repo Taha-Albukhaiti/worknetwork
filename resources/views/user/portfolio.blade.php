@@ -40,11 +40,11 @@
                                     <p><strong>Phone:</strong> {{ $data->phone ?? '' }}</p>
                                     <hr>
                                     <p>
-                                        <strong>Adresse:</strong> {{ $portfolios->street ?? '' }} {{ $portfolios->street_number ?? '' }}
+                                        <strong>Adresse:</strong> {{ $address->street ?? '' }} {{ $address->street_number ?? '' }}
                                     </p>
-                                    <p><strong>PLZ:</strong> {{ $portfolios->zipcode ?? '' }}</p>
-                                    <p><strong>Stadt:</strong> {{ $portfolios->city ?? '' }}</p>
-                                    <p><strong>Land:</strong> {{ $portfolios->state ?? '' }}</p>
+                                    <p><strong>PLZ:</strong> {{ $address->zip ?? '' }}</p>
+                                    <p><strong>Stadt:</strong> {{ $address->city ?? '' }}</p>
+                                    <p><strong>Land:</strong> {{ $address->state ?? '' }}</p>
                                 </div>
                             </div>
                         </div>

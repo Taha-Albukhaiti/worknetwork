@@ -6,10 +6,16 @@
                 <div class="fixed-md-bottom p-4 text-right">
                     @if (Route::has('login'))
                         @auth
-                            <a href="{{ route('user.dashboard') }}" class="btn btn-primary"><span>Dashboard</span></a>
+                            <!-- If the user is authenticated and has a recognized role, render the appropriate dashboard -->
+                            @if(Auth::user()->role == 'company')
+                                <a href="{{ route('company.dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
+                            @elseif(Auth::user()->role == 'user')
+                                <a href="{{ route('user.dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
+                            @elseif(Auth::user()->role == 'admin')
+                                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
+                            @endif
                         @else
                             <a href="{{ route('login') }}" class="btn btn-outline-primary">Log in</a>
-
                             @if (Route::has('register'))
                                 <a href="{{ route('register') }}" class="btn btn-outline-primary">Register</a>
                             @endif

@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->string('company_website')->nullable();
-            $table->string('company_email')->nullable();
-            $table->string('company_phone')->nullable();
             $table->text('company_description')->nullable();
             $table->timestamps();
         });

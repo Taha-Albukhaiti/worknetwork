@@ -286,7 +286,6 @@ class UserController extends Controller
      */
     public function updateOrCreateAddress($id, Request $request): void
     {
-        // finde heraus, ob der user schon eine address hat, wenn ja und es zu updaten gibt, dann mach das, ansonsten erstelle für ihn eine neue Adresse
         $addressData = [
             'street' => $request->input('address.street'),
             'street_number' => $request->input('address.street_number'),

@@ -63,8 +63,6 @@
                             <p class="text-muted">{{ $data->company_description }}</p>
                         </div>
 
-
-
                         <div class="mt-3 d-flex social-links">
                             <a href="javascript:;" class="btn btn-icon border btn-xs me-2">
                                 <i data-feather="github"></i>
@@ -121,51 +119,51 @@
                                 <!-- Street -->
                                 <div class="mb-3">
                                     <label for="street" class="form-label">Street:</label>
-                                    <input type="text" id="street" name="portfolios[street]" class="form-control"
-                                           value="{{ $portfolios->street ?? '' }}" required>
+                                    <input type="text" id="street" name="address[street]" class="form-control"
+                                           value="{{ $address->street ?? '' }}" required>
                                 </div>
 
                                 <!-- Street Number -->
                                 <div class="mb-3">
                                     <label for="street_number" class="form-label">Street Number:</label>
-                                    <input type="text" id="street_number" name="portfolios[street_number]"
-                                           class="form-control" value="{{ $portfolios->street_number ?? '' }}"
+                                    <input type="text" id="street_number" name="address[street_number]"
+                                           class="form-control" value="{{ $address->street_number ?? '' }}"
                                            required>
                                 </div>
 
                                 <!-- City -->
                                 <div class="mb-3">
                                     <label for="city" class="form-label">City:</label>
-                                    <input type="text" id="city" name="portfolios[city]" class="form-control"
-                                           value="{{ $portfolios->city ?? '' }}" required>
+                                    <input type="text" id="city" name="address[city]" class="form-control"
+                                           value="{{ $address->city ?? '' }}" required>
                                 </div>
 
                                 <!-- State -->
                                 <div class="mb-3">
                                     <label for="state" class="form-label">State:</label>
-                                    <input type="text" id="state" name="portfolios[state]" class="form-control"
-                                           value="{{ $portfolios->state ?? '' }}" required>
+                                    <input type="text" id="state" name="address[state]" class="form-control"
+                                           value="{{ $address->state ?? '' }}" required>
                                 </div>
 
                                 <!-- Zipcode -->
                                 <div class="mb-3">
                                     <label for="zipcode" class="form-label">Zipcode:</label>
-                                    <input type="text" id="zipcode" name="portfolios[zipcode]" class="form-control"
-                                           value="{{ $portfolios->zipcode ?? '' }}" required>
+                                    <input type="text" id="zipcode" name="address[zip]" class="form-control"
+                                           value="{{ $address->zip ?? '' }}" required>
                                 </div>
 
                                 <!-- Company Website Link -->
                                 <div class="mb-3">
                                     <label for="company_website" class="form-label">Company Website:</label>
-                                    <input type="text" id="company_website" name="company_website" class="form-control"
-                                           value="{{ $data->company_website ?? '' }}" required>
+                                    <input type="text" id="company_website" name="companyProfile[company_website]" class="form-control"
+                                           value="{{ $companyProfile->company_website ?? '' }}" required>
                                 </div>
 
                                 <!-- Company Description -->
                                 <div class="mb-3">
                                     <label for="company_description" class="form-label">Company Description:</label>
-                                    <textarea id="company_description" name="company_description" class="form-control"
-                                              required>{{ $data->company_description ?? '' }}</textarea>
+                                    <textarea id="company_description" name="companyProfile[company_description]" class="form-control"
+                                              required>{{ $companyProfile->company_description ?? '' }}</textarea>
                                 </div>
 
                                 <div class="mb-3">
@@ -187,7 +185,6 @@
                 </div>
             </div>
             <!-- middle wrapper end -->
-
         </div>
     </div>
     <!-- partial:../../partials/_footer.html -->

@@ -8,9 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Portfolio;
+use App\Models\Address;
+use App\Models\CompanyProfile;
 
 /**
  * @property mixed $id
+ * @method static find($id)
  */
 class User extends Authenticatable
 {
@@ -53,4 +56,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(Address::class);
     }
+
+
 }

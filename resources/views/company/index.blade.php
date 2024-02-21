@@ -15,4 +15,5 @@
         </div>
 
     </div>
+    @include('company.company_profile_information')
 @endsection

@@ -51,50 +51,63 @@
                         @if($portfolios)
                             <input type="text" name="portfolios[id]" value="{{ $portfolios->id }}" hidden>
 
-                        <!-- Portfolio-Address -->
+                            <!-- Portfolio-Address -->
+                            <!-- Address Section -->
+                            <!-- Address ID hidden-->
+                            <input type="text" name="address_id"
+                                   value="{{ $address->id ?? '' }}" hidden>
                             <div class="mb-3">
                                 <label for="street" class="form-label">Street</label>
-                                <input type="text" class="form-control" id="street" name="portfolios[street]" value="{{ $portfolios->street ?? '' }}">
+                                <input type="text" class="form-control" id="street" name="portfolios[street]"
+                                       value="{{ $address->street ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="street_number" class="form-label">Street Number</label>
-                                <input type="text" class="form-control" id="street_number" name="portfolios[street_number]" value="{{ $portfolios->street_number ?? '' }}">
+                                <input type="text" class="form-control" id="street_number"
+                                       name="portfolios[street_number]" value="{{ $address->street_number ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="zipcode" class="form-label">Zipcode</label>
-                                <input type="text" class="form-control" id="zipcode" name="portfolios[zipcode]" value="{{ $portfolios->zipcode ?? '' }}">
+                                <input type="text" class="form-control" id="zipcode" name="portfolios[zipcode]"
+                                       value="{{ $address->zipcode ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" name="portfolios[city]" value="{{ $portfolios->city ?? '' }}">
+                                <input type="text" class="form-control" id="city" name="portfolios[city]"
+                                       value="{{ $address->city ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="state" class="form-label">State</label>
-                                <input type="text" class="form-control" id="state" name="portfolios[state]" value="{{ $portfolios->state ?? '' }}">
+                                <input type="text" class="form-control" id="state" name="portfolios[state]"
+                                       value="{{ $address->state ?? '' }}">
 
                             </div>
                             <div class="mb-3">
                                 <label for="job_title" class="form-label">Job Title</label>
-                                <input type="text" class="form-control" id="job_title" name="portfolios[job_title]" value="{{ $portfolios->job_title ?? '' }}">
+                                <input type="text" class="form-control" id="job_title" name="portfolios[job_title]"
+                                       value="{{ $portfolios->job_title ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="company" class="form-label">Company</label>
-                                <input type="text" class="form-control" id="company" name="portfolios[company]" value="{{ $portfolios->company ?? '' }}">
+                                <input type="text" class="form-control" id="company" name="portfolios[company]"
+                                       value="{{ $portfolios->company ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="start_date" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="start_date" name="portfolios[start_date]" value="{{ $portfolios->start_date ?? '' }}">
+                                <input type="date" class="form-control" id="start_date" name="portfolios[start_date]"
+                                       value="{{ $portfolios->start_date ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="end_date" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="end_date" name="portfolios[end_date]" value="{{ $portfolios->end_date ?? '' }}">
+                                <input type="date" class="form-control" id="end_date" name="portfolios[end_date]"
+                                       value="{{ $portfolios->end_date ?? '' }}">
                             </div>
 
                             <!-- Portfolio-Details -->
