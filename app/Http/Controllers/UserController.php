@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ProfileRequestAccepted;
+use App\Mail\ProfileRequestRejected;
 use App\Models\Address;
+use App\Models\CompanyProfile;
 use App\Models\PortfolioMedia;
+use App\Models\ProfileRequest;
 use App\Models\User;
 use App\Models\Portfolio;
 use App\Models\PortfolioDetail;
+use Faker\Provider\Company;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -16,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -163,10 +169,6 @@ class UserController extends Controller
                     $portfolioMedia->save();
                 }
             }
-
-            // Delete removed details
-            $removedDetailIds = collect($request->input('removed_details'))->pluck('id');
-            PortfolioDetail::whereIn('id', $removedDetailIds)->delete();
         });
 
         $notification = [
@@ -176,7 +178,6 @@ class UserController extends Controller
 
         return redirect()->back()->with($notification);
     }
-
 
     public function userProfileStore(Request $request): RedirectResponse
     {
@@ -245,6 +246,17 @@ class UserController extends Controller
         return redirect()->back()->with($notification);
     }
 
+    public function deletePortfolioDetail($id): \Illuminate\Http\JsonResponse
+    {
+        $portfolioDetail = PortfolioDetail::find($id);
+        if ($portfolioDetail) {
+            $portfolioDetail->delete();
+            return response()->json(['message' => 'Portfolio Detail erfolgreich gelöscht'], 200);
+        }
+        return response()->json(['message' => 'Portfolio Detail nicht gefunden'], 404);
+
+    }
+
     public function userChangePassword(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -298,4 +310,52 @@ class UserController extends Controller
         $address = Address::updateOrCreate(['user_id' => $id], $addressData);
         $address->save();
     }
+
+    public function showProfileRequests()
+    {
+        $user = Auth::user();
+        $profileRequests = $user->profileRequests()->with('requestedUser.companyProfile', 'requestedUser.address')->get();
+        return view('user.profile_requests', compact('profileRequests'));
+    }
+
+
+    public function acceptProfileRequest($id)
+    {
+        $profileRequest = ProfileRequest::findOrFail($id);
+        $profileRequest->status = 'accepted';
+        $profileRequest->save();
+
+        // Mail::to($profileRequest->requestedUser->email)->send(mailable: new ProfileRequestAccepted($profileRequest));
+
+        $notification = array(
+            'message' => 'Profilanfrage akzeptiert',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
+    }
+
+    public function rejectProfileRequest($id)
+    {
+        $profileRequest = ProfileRequest::findOrFail($id);
+        $profileRequest->status = 'rejected';
+        $profileRequest->save();
+
+        //Mail::to($profileRequest->requestedUser->email)->send(mailable: new ProfileRequestRejected($profileRequest));
+
+        $notification = array(
+            'message' => 'Profilanfrage abgelehnt',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->back()->with($notification);
+    }
+
+    public function companyProfileView($id)
+    {
+        $data = User::find($id);
+        $companyProfile = CompanyProfile::where('user_id', $id)->first();
+        $address = $data->address;
+        return \view('company_profile_show', compact('data', 'companyProfile', 'address'));
+    }
+
 }

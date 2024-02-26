@@ -66,6 +66,12 @@
                             </a>
                         </li>
                         <li class="dropdown-item py-2">
+                            <a href="{{ route('company.accepted.users') }}" class="text-body ms-0">
+                                <i class="me-2 icon-md" data-feather="bell"></i>
+                                <span>Profile responses</span>
+                            </a>
+                        </li>
+                        <li class="dropdown-item py-2">
                             <a href="{{route('company.logout')}}" class="text-body ms-0">
                                 <i class="me-2 icon-md" data-feather="log-out"></i>
                                 <span>Log Out</span>

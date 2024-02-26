@@ -129,21 +129,27 @@
                                             <label class="form-label"><h4>Details:</h4></label>
                                             @foreach($portfolios->details as $index => $detail)
                                                 <div class="detailSet mb-3">
-                                                    <label class="form-label">Titel der
-                                                        Content: {{ $detail->type }}</label>
+                                                    <label class="form-label
+                                                    ">Titel der Content: {{ $detail->type }}</label>
                                                     <input type="hidden" name="portfolios[details][{{ $index }}][id]"
                                                            value="{{ $detail->id }}">
                                                     <input type="text"
-                                                           name="portfolios[details][{{ $index }}][type]"
-                                                           value="{{ $detail->type }}" class="form-control">
-                                                    <label class="form-label mb-2">Content</label>
+                                                              name="portfolios[details][{{ $index }}][type]"
+                                                              value="{{ $detail->type }}" class="form-control">
+                                                    <label class="form-label
+                                                    mb-2">Content</label>
                                                     <textarea name="portfolios[details][{{ $index }}][content]"
                                                               class="form-control"
                                                               required>{{ $detail->content }}</textarea>
+                                                    <button type="button" class="btn btn-danger btn-sm delete-detail-btn"
+                                                            data-detail-id="{{ $detail->id }}">Delete
+                                                    </button>
                                                 </div>
+
                                             @endforeach
                                         </div>
                                     @endif
+
 
                                     <!-- Add More Details Button -->
                                     <button type="button" class="btn btn-outline-primary btn-icon-text mb-3"
@@ -256,6 +262,7 @@
 
             detailIndex++;
         }
+
 
 
     </script>

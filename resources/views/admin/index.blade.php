@@ -14,5 +14,7 @@
     </div>
   </div>
 
+  @include('admin.users_information')
+
 </div>
 @endsection

@@ -9,7 +9,7 @@
     <meta name="keywords"
           content="nobleui, bootstrap, bootstrap 5, bootstrap5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
 
-    <title>WorkNetwork</title>
+    <title>Network</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,7 +50,6 @@
         <!-- partial -->
 
         <!-- Hauptinhalt -->
-
         <div class="container mt-5">
             <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin mt-4">
                 <div>
@@ -78,17 +77,9 @@
                     </div>
                 </div>
             </div>
-            <div class="container mt-4">
-                <form class="search-form">
-                    <div class="input-group">
-                        <div class="input-group-text">
-                            <i data-feather="search"></i>
-                        </div>
-                        <input type="text" class="form-control" id="navbarForm" placeholder="Search here...">
-                    </div>
-                </form>
-            </div>
         </div>
+
+        @include('cards')
 
         <!-- partial:partials/_footer.html -->
         @include('body.footer')

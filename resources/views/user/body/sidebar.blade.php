@@ -19,34 +19,39 @@
                 </a>
             </li>
 
-            <li class="nav-item nav-category">web apps</li>
+            <li class="nav-item nav-category">Web Apps</li>
             <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#emails" role="button" aria-expanded="false"
-                   aria-controls="emails">
-                    <i class="link-icon" data-feather="mail"></i>
-                    <span class="link-title">Email</span>
+                <a href="#" class="nav-link" data-bs-toggle="collapse" href="#userMenu" role="button"
+                   aria-expanded="false" aria-controls="userMenu">
+                    <i class="link-icon" data-feather="user"></i>
+                    <span class="link-title">User</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
-                <div class="collapse" id="emails">
+                <div class="collapse" id="userMenu">
                     <ul class="nav sub-menu">
                         <li class="nav-item">
-                            <a href="pages/email/inbox.html" class="nav-link">Inbox</a>
+                            <a href="{{ route('user.profile') }}" class="nav-link">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a href="pages/email/read.html" class="nav-link">Read</a>
+                            <a href="{{ route('user.dashboard') }}" class="nav-link">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a href="pages/email/compose.html" class="nav-link">Compose</a>
+                            <a href="{{ route('user.profile.edit') }}" class="nav-link">Edit Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('user.profile.change.password') }}" class="nav-link">Change Password</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('user.portfolio') }}" class="nav-link">Make Portfolio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('user.profile_requests') }}" class="nav-link">Profile Requests</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('user.logout') }}" class="nav-link">Log Out</a>
                         </li>
                     </ul>
                 </div>
-            </li>
-
-            <li class="nav-item">
-                <a href="pages/apps/chat.html" class="nav-link">
-                    <i class="link-icon" data-feather="message-square"></i>
-                    <span class="link-title">Chat</span>
-                </a>
             </li>
 
 
@@ -62,10 +67,10 @@
                 <div class="collapse" id="authPages">
                     <ul class="nav sub-menu">
                         <li class="nav-item">
-                            <a href="{{route('user.login')}}" class="nav-link">Login</a>
+                            <a href="{{ route('user.login') }}" class="nav-link">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a href="pages/auth/register.html" class="nav-link">Register</a>
+                            <a href="#" class="nav-link">Register</a>
                         </li>
                     </ul>
                 </div>
@@ -82,4 +87,3 @@
         </ul>
     </div>
 </nav>
-

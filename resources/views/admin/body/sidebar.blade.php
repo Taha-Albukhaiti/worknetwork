@@ -19,7 +19,7 @@
                 </a>
             </li>
 
-            <li class="nav-item nav-category">web apps</li>
+            <li class="nav-item nav-category">Web Apps</li>
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#emails" role="button" aria-expanded="false"
                    aria-controls="emails">
@@ -49,6 +49,7 @@
             </li>
 
             <li class="nav-item nav-category">Pages</li>
+
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#authPages" role="button" aria-expanded="false"
                    aria-controls="authPages">
@@ -59,7 +60,36 @@
                 <div class="collapse" id="authPages">
                     <ul class="nav sub-menu">
                         <li class="nav-item">
-                            <a href="{{route('admin.login')}}" class="nav-link">Login</a>
+                            <a href="{{ route('admin.login') }}" class="nav-link">Login</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item nav-category">Admin</li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#adminMenu" role="button" aria-expanded="false"
+                   aria-controls="adminMenu">
+                    <i class="link-icon" data-feather="user"></i>
+                    <span class="link-title">Admin</span>
+                    <i class="link-arrow" data-feather="chevron-down"></i>
+                </a>
+                <div class="collapse" id="adminMenu">
+                    <ul class="nav sub-menu">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.profile') }}" class="nav-link">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard') }}" class="nav-link">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.profile.edit') }}" class="nav-link">Edit Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.profile.change.password') }}" class="nav-link">Change Password</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.logout') }}" class="nav-link">Log Out</a>
                         </li>
                     </ul>
                 </div>
@@ -75,4 +105,3 @@
         </ul>
     </div>
 </nav>
-

@@ -13,7 +13,6 @@ use App\Models\CompanyProfile;
 
 /**
  * @property mixed $id
- * @method static find($id)
  */
 class User extends Authenticatable
 {
@@ -49,7 +48,7 @@ class User extends Authenticatable
 
     public function portfolios()
     {
-        return $this->hasMany(Portfolio::class);
+        return $this->hasOne(Portfolio::class);
     }
 
     public function address()
@@ -57,5 +56,18 @@ class User extends Authenticatable
         return $this->hasOne(Address::class);
     }
 
+    public function companyProfile()
+    {
+        return $this->hasOne(CompanyProfile::class);
+    }
 
+    public function profileRequests()
+    {
+        return $this->hasMany(ProfileRequest::class, 'user_id');
+    }
+
+    public function requestedProfileRequests()
+    {
+        return $this->hasMany(ProfileRequest::class, 'requested_user_id');
+    }
 }

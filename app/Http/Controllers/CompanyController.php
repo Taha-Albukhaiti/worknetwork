@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use App\Models\CompanyProfile;
+use App\Models\Portfolio;
+use App\Models\ProfileRequest;
 use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -151,4 +153,20 @@ class CompanyController extends Controller
         $companyProfile = CompanyProfile::updateOrCreate(['user_id' => $id], $companyProfileData);
         $companyProfile->save();
     }
+
+    public function acceptedUsers()
+    {
+        $profileRequests = ProfileRequest::where('requested_user_id', Auth::user()->id)->where('status', 'accepted')->get();
+        $users = User::whereIn('id', $profileRequests->pluck('user_id'))->get();
+        return view('company.accepted_users', compact('users'));
+    }
+
+    public function acceptedUserProfileView($id)
+    {
+        $data = User::find($id);
+        $portfolios = Portfolio::where('user_id', $id)->first();
+        $address = $data->address;
+        return view('company.accepted_user_profile_view', compact('data', 'address', 'portfolios'));
+    }
+
 }
