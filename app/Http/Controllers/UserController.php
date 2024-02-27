@@ -150,9 +150,6 @@ class UserController extends Controller
     public function userProfileStore(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        // Validierung der Eingabe hier einfügen
-
-        // Benutzerprofil aktualisieren
         $user->update($request->only(['username', 'name', 'email', 'phone']));
         // Foto verarbeiten
         if ($request->hasFile('photo')) {
@@ -161,10 +158,8 @@ class UserController extends Controller
         $user->save();
         // Adresse aktualisieren oder erstellen
         $user->address()->updateOrCreate([], $request->input('address'))->save();
-
         // Portfolio verarbeiten
         $portfolio = $this->updateOrCreatePortfolio($user, $request->input('portfolios'));
-
         // Portfolio Details verarbeiten
         $this->updateOrCreatePortfolioDetails($portfolio, $request->input('portfolios.details'));
 

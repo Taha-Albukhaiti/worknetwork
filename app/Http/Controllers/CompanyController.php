@@ -17,7 +17,12 @@ use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
-    public function companyDashboard(): View
+    /**
+     * Zeigt das Dashboard des Unternehmens an
+     *
+     * @return View|Application|Factory
+     */
+    public function companyDashboard(): View|Application|Factory
     {
         $data = User::find(Auth::user()->id);
         $address = $this->getAddress();
@@ -25,6 +30,12 @@ class CompanyController extends Controller
         return view('company.index', compact('data', 'address', 'companyProfile'));
     }
 
+    /**
+     * Meldet das Unternehmen aus.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function companyLogout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -36,11 +47,21 @@ class CompanyController extends Controller
         return redirect('/company/login');
     }
 
+    /**
+     * Zeigt das Anmeldeformular für das Unternehmen an.
+     *
+     * @return View|Application|Factory
+     */
     public function companyLogin(): View|Application|Factory
     {
         return view('company.company_login');
     }
 
+    /**
+     * Zeigt das Formular zum Ändern des Unternehmenspassworts an.
+     *
+     * @return View|Application|Factory
+     */
     public function companyChangePassword(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -48,6 +69,12 @@ class CompanyController extends Controller
         return view('company.company_change_password', compact('data'));
     }
 
+    /**
+     * Aktualisiert das Unternehmenspasswort.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function companyUpdatePassword(Request $request): RedirectResponse
     {
         $request->validate([
@@ -75,7 +102,11 @@ class CompanyController extends Controller
         return back()->with($notification);
     }
 
-
+    /**
+     * Zeigt das Unternehmensprofil an.
+     *
+     * @return View|Application|Factory
+     */
     public function companyProfile(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -85,6 +116,11 @@ class CompanyController extends Controller
         return view('company.company_profile_view', compact('data', 'address', 'companyProfile'));
     }
 
+    /**
+     * Zeigt das Formular zum Bearbeiten des Unternehmensprofils an.
+     *
+     * @return View|Application|Factory
+     */
     public function companyProfileEdit(): View|Application|Factory
     {
         $id = Auth::user()->id;
@@ -94,6 +130,12 @@ class CompanyController extends Controller
         return view('company.company_profile_edit_view', compact('data', 'address', 'companyProfile'));
     }
 
+    /**
+     * Speichert die Änderungen am Unternehmensprofil.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function companyProfileStore(Request $request): RedirectResponse
     {
         $id = Auth::user()->id;
@@ -122,12 +164,24 @@ class CompanyController extends Controller
         return redirect()->back()->with($notification);
     }
 
-    public function getAddress()
+    /**
+     * Gibt die Adresse des eingeloggten Unternehmens zurück.
+     *
+     * @return Address
+     */
+    public function getAddress(): Address
     {
         $id = Auth::user()->id;
         return Address::where('user_id', $id)->first();
     }
 
+    /**
+     * Aktualisiert oder erstellt die Adresse des Unternehmens.
+     *
+     * @param int $id
+     * @param Request $request
+     * @return Address
+     */
     public function updateOrCreateAddress($id, Request $request): Address
     {
         $addressData = [
@@ -143,6 +197,13 @@ class CompanyController extends Controller
         return $address;
     }
 
+    /**
+     * Aktualisiert oder erstellt das Unternehmensprofil.
+     *
+     * @param int $id
+     * @param Request $request
+     * @return void
+     */
     private function updateOrCreateCompanyProfile($id, Request $request): void
     {
         $companyProfileData = [
@@ -154,14 +215,25 @@ class CompanyController extends Controller
         $companyProfile->save();
     }
 
-    public function acceptedUsers()
+    /**
+     * Zeigt die akzeptierten Benutzerprofile an.
+     *
+     * @return View|Application|Factory
+     */
+    public function acceptedUsers(): Factory|Application|View
     {
         $profileRequests = ProfileRequest::where('requested_user_id', Auth::user()->id)->where('status', 'accepted')->get();
         $users = User::whereIn('id', $profileRequests->pluck('user_id'))->get();
         return view('company.accepted_users', compact('users'));
     }
 
-    public function acceptedUserProfileView($id)
+    /**
+     * Zeigt das Profil eines akzeptierten Benutzers an.
+     *
+     * @param int $id
+     * @return View|Application|Factory
+     */
+    public function acceptedUserProfileView($id): Factory|Application|View
     {
         $data = User::find($id);
         $portfolios = Portfolio::where('user_id', $id)->first();

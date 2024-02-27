@@ -19,8 +19,7 @@ use Illuminate\Support\Facades\Hash;
 class AdminController extends Controller
 {
     /**
-     * Zeigt das Admin-Dashboard. und liefert die Informationen über die Anzahl der Benutzer, Unternehmen und Profile und ihre Daten.
-     *
+     * Zeigt das Admin-Dashboard und liefert die Informationen über die Anzahl der Benutzer, Unternehmen und Profile und ihre Daten.
      *
      * @return View
      */
@@ -32,6 +31,12 @@ class AdminController extends Controller
         return view('admin.index', compact('users', 'companies'));
     }
 
+    /**
+     * Durchsucht Benutzer nach dem angegebenen Suchbegriff.
+     *
+     * @param Request $request
+     * @return View|Application|Factory
+     */
     public function adminSearchUser(Request $request): View|Application|Factory
     {
         $search = $request->get('search');
@@ -49,6 +54,12 @@ class AdminController extends Controller
         return view('admin.index', compact('users', 'companies'));
     }
 
+    /**
+     * Durchsucht Unternehmen nach dem angegebenen Suchbegriff.
+     *
+     * @param Request $request
+     * @return View|Application|Factory
+     */
     public function adminSearchCompany(Request $request): View|Application|Factory
     {
         $search = $request->get('search');
@@ -66,6 +77,12 @@ class AdminController extends Controller
         return view('admin.index', compact('users', 'companies'));
     }
 
+    /**
+     * Lädt weitere Benutzer für das Admin-Dashboard.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function loadMoreUsers(Request $request): JsonResponse
     {
         $skip = $request->skip;
@@ -73,6 +90,12 @@ class AdminController extends Controller
         $users = User::where('role', 'user')->latest()->skip($skip)->take($perPage)->get();
         return response()->json(['users' => $users]);
     }
+    /**
+     * Lädt weitere Unternehmen für das Admin-Dashboard.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function loadMoreCompanies(Request $request): JsonResponse
     {
         $skip = $request->skip;

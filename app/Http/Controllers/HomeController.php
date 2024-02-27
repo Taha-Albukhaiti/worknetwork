@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\CompanyProfile;
-use App\Models\Portfolio;
 use App\Models\User;
-use Faker\Provider\ar_EG\Company;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-
-
-    public function index()
+    /**
+     * Zeigt die Startseite mit einer Liste von Benutzern und Unternehmensprofilen.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|Factory|View|Application
+     */
+    public function index(): Application|View|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $users = User::where('role', 'user')->get();
         $companiesProfile = User::where('role', 'company')->get();
@@ -21,12 +25,12 @@ class HomeController extends Controller
     }
 
     /**
-     * Zeige die User, die dem Suchbegriff entsprechen nach Jobtitel. Jobtitel wird in der Tabelle "portfolios" gespeichert.
+     * Zeigt die Benutzer an, die dem Suchbegriff nach Jobtitel entsprechen.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+     * @return \Illuminate\Contracts\Foundation\Application|Factory|View|Application
      */
-    public function searchUser(Request $request)
+    public function searchUser(Request $request): Application|View|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $search = $request->get('search');
         $usersQuery = User::where('role', 'user');
@@ -44,27 +48,26 @@ class HomeController extends Controller
     }
 
     /**
-     * Zeige die Unternehmen, die dem Suchbegriff entsprechen nach Firmenname. Firmenname wird in der Tabelle "company_profiles" gespeichert.
+     * Zeigt die Unternehmen an, die dem Suchbegriff nach Firmenname entsprechen.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+     * @return \Illuminate\Contracts\Foundation\Application|Factory|View|Application
      */
-    public function searchCompany(Request $request)
+    public function searchCompany(Request $request): Application|View|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $search = $request->get('search');
-        // get the company profiles where the company name (the User Name) is like the search term
-        $companiesProfile= User::where('role', 'company')->where('name', 'like', '%' . $search . '%')->get();
+        $companiesProfile = User::where('role', 'company')->where('name', 'like', '%' . $search . '%')->get();
         $users = User::where('role', 'user')->get();
-
         return view('welcome', compact('users', 'companiesProfile'));
     }
 
-
     /**
+     * Sendet eine Profilanforderung an einen Benutzer.
+     *
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function userProfileRequest($id)
+    public function userProfileRequest($id): RedirectResponse
     {
         $user = User::find($id);
         $requestedUser = User::find(auth()->id());
@@ -89,6 +92,12 @@ class HomeController extends Controller
         return redirect()->back()->with($notification);
     }
 
+    /**
+     * Zeigt das Profil eines Unternehmens an.
+     *
+     * @param $id
+     * @return \Illuminate\Contracts\Foundation\Application|Factory|View|Application
+     */
     public function companyProfileView($id)
     {
         $data = User::find($id);
@@ -97,7 +106,13 @@ class HomeController extends Controller
         return view('company_profile_show', compact('data', 'address', 'companyProfile'));
     }
 
-    public function getAddress($id)
+    /**
+     * Gibt die Adresse eines Benutzers zurück.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function getAddress($id): mixed
     {
         $address = User::find($id)->address;
         return $address;
