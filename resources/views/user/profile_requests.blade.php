@@ -22,11 +22,11 @@
                                 <tbody>
                                 @foreach($profileRequests as $request)
                                     <tr>
-                                        <td>{{ $request->requestedUser->name }}</td>
-                                        <td>{{ $request->requestedUser->companyProfile->company_website }}</td>
-                                        <td>{{ $request->requestedUser->email }}</td>
-                                        <td>{{ $request->requestedUser->phone }}</td>
-                                        <td>{{ $request->requestedUser->address->full_address }}</td>
+                                        <td>{{ $request->requestedUser->name ?? ''}}</td>
+                                        <td>{{ $request->requestedUser->companyProfile->company_website ?? ''}}</td>
+                                        <td>{{ $request->requestedUser->email ?? ''}}</td>
+                                        <td>{{ $request->requestedUser->phone ?? ''}}</td>
+                                        <td>{{ $request->requestedUser->address->full_address ?? ''}}</td>
                                         <td>
                                             <a href="{{ route('user.company.profile.show', $request->requestedUser->id) }}" class="btn btn-outline-primary">Zum Profil</a>
                                             <form action="{{ route('user.accept_profile_request', $request->id) }}" method="POST" style="display: inline;">

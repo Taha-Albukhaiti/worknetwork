@@ -18,13 +18,12 @@
                     <span class="link-title">Home</span>
                 </a>
             </li>
-
-            <li class="nav-item nav-category">Web Apps</li>
+            <li class="nav-item nav-category">User</li>
             <li class="nav-item">
-                <a href="#" class="nav-link" data-bs-toggle="collapse" href="#userMenu" role="button"
-                   aria-expanded="false" aria-controls="userMenu">
+                <a class="nav-link" data-bs-toggle="collapse" href="#userMenu" role="button" aria-expanded="false"
+                   aria-controls="adminMenu">
                     <i class="link-icon" data-feather="user"></i>
-                    <span class="link-title">User</span>
+                    <span class="link-title">Admin</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
                 <div class="collapse" id="userMenu">
@@ -54,9 +53,7 @@
                 </div>
             </li>
 
-
             <li class="nav-item nav-category">Pages</li>
-
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#authPages" role="button" aria-expanded="false"
                    aria-controls="authPages">

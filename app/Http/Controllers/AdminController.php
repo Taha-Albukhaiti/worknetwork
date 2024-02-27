@@ -25,8 +25,8 @@ class AdminController extends Controller
      */
     public function adminDashboard(): View
     {
-        //$users = User::where('role', 'user')->latest()->take(4)->get();
-        $users = User::where('role', 'user')->get();
+        $users = User::where('role', 'user')->latest()->take(4)->get();
+        // $users = User::where('role', 'user')->get();
         $companies = User::where('role', 'company')->latest()->take(4)->get();
         return view('admin.index', compact('users', 'companies'));
     }
@@ -67,7 +67,7 @@ class AdminController extends Controller
 
     public function loadMoreUsers()
     {
-        $users = User::where('role', 'user')->latest()->paginate(4);
+        $users = User::where('role', 'user')->latest()->get();
         $companies = User::where('role', 'company')->latest()->take(4)->get();
         return view('admin.index', compact('users', 'companies'));
     }
