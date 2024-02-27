@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,8 +26,8 @@ class AdminController extends Controller
      */
     public function adminDashboard(): View
     {
+
         $users = User::where('role', 'user')->latest()->take(4)->get();
-        // $users = User::where('role', 'user')->get();
         $companies = User::where('role', 'company')->latest()->take(4)->get();
         return view('admin.index', compact('users', 'companies'));
     }
@@ -65,12 +66,21 @@ class AdminController extends Controller
         return view('admin.index', compact('users', 'companies'));
     }
 
-    public function loadMoreUsers()
+    public function loadMoreUsers(Request $request): JsonResponse
     {
-        $users = User::where('role', 'user')->latest()->get();
-        $companies = User::where('role', 'company')->latest()->take(4)->get();
-        return view('admin.index', compact('users', 'companies'));
+        $skip = $request->skip;
+        $perPage = 4;
+        $users = User::where('role', 'user')->latest()->skip($skip)->take($perPage)->get();
+        return response()->json(['users' => $users]);
     }
+    public function loadMoreCompanies(Request $request): JsonResponse
+    {
+        $skip = $request->skip;
+        $perPage = 4;
+        $companies = User::where('role', 'company')->latest()->skip($skip)->take($perPage)->get();
+        return response()->json(['companies' => $companies]);
+    }
+
 
     /**
      * Meldet den Admin aus.

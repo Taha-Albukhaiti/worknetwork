@@ -57,7 +57,10 @@
                             </tbody>
                         </table>
                     </div>
-                    <button id="loadMoreUsersBtn" class="btn btn-primary">Load More Users</button>
+                    <br>
+                    <div class="text-center">
+                        <button id="loadMoreUsersBtn" class="btn btn-primary">Load More</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,7 +86,7 @@
                         </div>
                     </form>
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="companyTable">
                             <thead>
                             <tr>
                                 <th>#</th>
@@ -96,7 +99,7 @@
                                 <th>Action</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="companyTableBody">
                             @foreach($companies as $company)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
@@ -125,6 +128,10 @@
                             </tbody>
                         </table>
                     </div>
+                    <br>
+                    <div class="text-center">
+                        <button id="loadMoreCompaniesBtn" class="btn btn-primary">Load More</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,24 +141,25 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    var userPage = 1; // Seitenzahl für Benutzer
-    var userLoading = false; // Flag, um Mehrfachanforderungen zu vermeiden
+    var userLoading = false;
+    var userPage = 1;
 
     $(document).ready(function () {
-        $("#loadMoreUsersBtn").click(function () {
+        $("#loadMoreUsersBtn").on('click', function () {
             if (!userLoading) {
                 userLoading = true;
-                userPage++; // Nächste Seite laden
+                userPage++;
                 loadMoreUsers(userPage);
             }
         });
     });
 
     function loadMoreUsers(page) {
+        var skip = (page - 1) * 4;
         $.ajax({
             url: "{{ route('admin.load.more.users') }}",
             type: "GET",
-            data: {page: page},
+            data: {skip: skip}, // Übergabe des Parameters skip
             success: function (response) {
                 if (response.users.length > 0) {
                     appendUsersToTable(response.users);
@@ -168,18 +176,74 @@
         var tableBody = $("#userTableBody");
         users.forEach(function (user) {
             var row = `
-            <tr>
-                <td>${user.id}</td>
-                <td><img src="${user.photo}" alt="profile" class="img-thumbnail" style="max-width: 50px; max-height: 50px;"></td>
-                <td>${user.name}</td>
-                <td>${user.username}</td>
-                <td>${user.email}</td>
-                <td>${user.phone}</td>
-                <td>${user.role}</td>
-                <td>
-                    <a href="{{ route('admin.user.show', '') }}/${user.id}" class="btn btn-outline-primary">View</a> <hr>
-                    <form action="{{ route('admin.user.delete', '') }}/${user.id}" method="POST">
-                        @csrf
+        <tr>
+            <td>${user.id}</td>
+            <td><img src="{{ url('upload/user_images/') }}/${user.photo}" alt="profile" class="img-thumbnail" style="max-width: 50px; max-height: 50px;"></td>
+            <td>${user.name}</td>
+            <td>${user.username}</td>
+            <td>${user.email}</td>
+            <td>${user.phone}</td>
+            <td>${user.role}</td>
+            <td>
+                <a href="{{ route('admin.user.show', '') }}/${user.id}" class="btn btn-outline-primary">View</a> <hr>
+                <form action="{{ route('admin.user.delete', '') }}/${user.id}" method="POST">
+                    @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger">Delete</button>
+        </form>
+    </td>
+    </tr>`;
+            tableBody.append(row);
+        });
+    }
+
+    var companyLoading = false;
+    var companyPage = 1;
+
+    $(document).ready(function () {
+        $("#loadMoreCompaniesBtn").on('click', function () {
+            if (!companyLoading) {
+                companyLoading = true;
+                companyPage++;
+                loadMoreCompanies(companyPage);
+            }
+        });
+    });
+
+    function loadMoreCompanies(page) {
+        var skip = (page - 1) * 4;
+        $.ajax({
+            url: "{{ route('admin.load.more.companies') }}",
+            type: "GET",
+            data: {skip: skip}, // Übergabe des Parameters skip
+            success: function (response) {
+                if (response.companies.length > 0) {
+                    appendCompaniesToTable(response.companies);
+                }
+                companyLoading = false;
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function appendCompaniesToTable(companies) {
+        var tableBody = $("#companyTableBody");
+        companies.forEach(function (company) {
+            var row = `
+        <tr>
+            <td>${company.id}</td>
+            <td><img src="{{ url('upload/company_images/') }}/${company.photo}" alt="profile" class="img-thumbnail" style="max-width: 50px; max-height: 50px;"></td>
+            <td>${company.name}</td>
+            <td>${company.username}</td>
+            <td>${company.email}</td>
+            <td>${company.phone}</td>
+            <td>${company.role}</td>
+            <td>
+                <a href="{{ route('admin.company.show', '') }}/${company.id}" class="btn btn-outline-primary">View</a> <hr>
+                <form action="{{ route('admin.company.delete', '') }}/${company.id}" method="POST">
+                    @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-outline-danger">Delete</button>
         </form>
@@ -188,5 +252,8 @@
             tableBody.append(row);
         });
     }
+
+
+
 </script>
 

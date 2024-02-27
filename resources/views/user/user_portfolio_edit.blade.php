@@ -14,9 +14,9 @@
                                 <!-- Profile Image and Username -->
                                 <div class="mb-5 d-flex align-items-center">
                                     <img class="wd-100 rounded-circle"
-                                         src="{{ !empty($data->photo) ? url('upload/user_images/'.$data->photo) : url('upload/no_image.jpg')}}"
+                                         src="{{ !empty($user->photo) ? url('upload/user_images/'.$user->photo) : url('upload/no_image.jpg')}}"
                                          alt="profile">
-                                    <span class="h4 ms-3">{{ $data->username }}</span>
+                                    <span class="h4 ms-3">{{ $user->username }}</span>
                                 </div>
 
                                 <!-- Portfolio Form -->
@@ -25,33 +25,33 @@
                                     @csrf
 
                                     <!-- User ID -->
-                                    <input type="hidden" name="portfolios[user_id]" value="{{ $data->id }}">
+                                    <input type="hidden" name="portfolios[user_id]" value="{{ $user->id }}">
 
                                     <!-- Username -->
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Username:</label>
                                         <input type="text" id="username" name="username" class="form-control"
-                                               value="{{ $data->username ?? '' }}" required>
+                                               value="{{ $user->username ?? '' }}" required>
                                     </div>
 
                                     <!-- Phone -->
                                     <div class="mb-3">
                                         <label for="phone" class="form-label">Phone:</label>
                                         <input type="text" id="phone" name="phone" class="form-control"
-                                               value="{{ $data->phone ?? '' }}" required>
+                                               value="{{ $user->phone ?? '' }}" required>
                                     </div>
 
                                     <!-- Email -->
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email:</label>
                                         <input type="email" id="email" name="email" class="form-control"
-                                               value="{{ $data->email ?? '' }}" required>
+                                               value="{{ $user->email ?? '' }}" required>
                                     </div>
 
                                     <!-- Address Section unabhängig vom Portfolio objekt-->
                                     <label class="form-label"><h4>Address:</h4></label>
                                     <!-- Address ID -->
-                                    <input type="hidden" name="address[address_id]"
+                                    <input type="hidden" name="address[id]"
                                            value="{{ $address->id ?? '' }}">
 
                                     <!-- Street -->
@@ -134,8 +134,8 @@
                                                     <input type="hidden" name="portfolios[details][{{ $index }}][id]"
                                                            value="{{ $detail->id }}">
                                                     <input type="text"
-                                                              name="portfolios[details][{{ $index }}][type]"
-                                                              value="{{ $detail->type }}" class="form-control">
+                                                           name="portfolios[details][{{ $index }}][type]"
+                                                           value="{{ $detail->type }}" class="form-control">
                                                     <label class="form-label
                                                     mb-2">Content</label>
                                                     <textarea name="portfolios[details][{{ $index }}][content]"
@@ -149,7 +149,6 @@
                                             @endforeach
                                         </div>
                                     @endif
-
 
                                     <!-- Add More Details Button -->
                                     <button type="button" class="btn btn-outline-primary btn-icon-text mb-3"
@@ -174,6 +173,7 @@
                                         <label class="form-label" for="file">Additional Files:</label>
                                         <input class="form-control" name="files[]" type="file" id="file" multiple>
                                     </div>
+
 
                                     <!-- Show Image -->
                                     <!-- File Upload for Images -->
@@ -263,7 +263,34 @@
             detailIndex++;
         }
 
+        $(document).on('click', '.delete-detail-btn', function () {
+            let detailId = $(this).data('detail-id');
+            if (confirm('Are you sure to delete this detail?')) {
+                $.ajax({
+                    url: '{{ route('user.portfolio.delete', ['id' => 'detailId'])}}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        detailId: detailId
+                    },
+                    success: function (response) {
+                        if (response.status) {
+                            alert(response.message);
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        });
 
+        // Zeige die Dateien oder additonalen Bilder an
+        $(document).on('change', '#image', function (e) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                $('#showImage').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(e.target.files['0']);
+        });
 
     </script>
 

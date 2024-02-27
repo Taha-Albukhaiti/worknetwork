@@ -61,23 +61,6 @@ class HomeController extends Controller
 
 
     /**
-     * Schicke eine Anfrage an die User-Email-Adresse mit der ID des anfragenden Users,
-     * falls der User diese Anfrage akzeptiert, wird der anfragende User per E-Mail benachrichtigt. und kann dann das Profil des Users sehen.
-     * Falls der User die Anfrage ablehnt, wird der anfragende User per E-Mail benachrichtigt.
-     *
-     * Hier wird die Anfrage in die Datenbank geschrieben.
-     * Die Anfrage wird in der Tabelle "profile_requests" gespeichert.
-     * Die Tabelle "profile_requests" hat die Spalten "user_id", "requested_user_id" und "status".
-     * "user_id" ist der User, der die Anfrage stellt.
-     * "requested_user_id" ist der User, dessen Profil angefragt wird.
-     * "status" ist der Status der Anfrage. Der Status kann "pending", "accepted" oder "rejected" sein.
-     * Die Anfrage wird nur in die Datenbank geschrieben, wenn es noch keine Anfrage gibt, die den gleichen User und den gleichen angefragten User hat.
-     * Wenn es bereits eine Anfrage gibt, wird die Anfrage nicht in die Datenbank geschrieben.
-     * Wenn die Anfrage in die Datenbank geschrieben wird, wird der Status auf "pending" gesetzt.
-     * Wenn der Status "pending" ist, kann der User das Profil des angefragten Users nicht sehen.
-     * Wenn der Status "accepted" ist, kann der User das Profil des angefragten Users sehen.
-     * Wenn der Status "rejected" ist, kann der User das Profil des angefragten Users nicht sehen.
-     *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */

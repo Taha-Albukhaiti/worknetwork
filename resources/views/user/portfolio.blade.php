@@ -22,7 +22,7 @@
                 <div class="card-body">
                     <!-- Profilbild -->
                     <div class="text-center mb-4">
-                        <img class="wd-100 rounded-circle" src="{{ !empty($data->photo) ? url('upload/user_images/'.$data->photo) : url('upload/no_image.jpg')}}"
+                        <img class="wd-100 rounded-circle" src="{{ !empty($user->photo) ? url('upload/user_images/'.$user->photo) : url('upload/no_image.jpg')}}"
                              alt="profile">
                     </div>
 
@@ -34,10 +34,10 @@
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h2 class="card-title mb-4"><strong>Benutzerinformationen</strong></h2>
-                                    <p><strong>Username:</strong> {{ $data->username ?? '' }}</p>
-                                    <p><strong>Name:</strong> {{ $data->name ?? '' }}</p>
-                                    <p><strong>Email:</strong> {{ $data->email ?? '' }}</p>
-                                    <p><strong>Phone:</strong> {{ $data->phone ?? '' }}</p>
+                                    <p><strong>Username:</strong> {{ $user->username ?? '' }}</p>
+                                    <p><strong>Name:</strong> {{ $user->name ?? '' }}</p>
+                                    <p><strong>Email:</strong> {{ $user->email ?? '' }}</p>
+                                    <p><strong>Phone:</strong> {{ $user->phone ?? '' }}</p>
                                     <hr>
                                     <p>
                                         <strong>Adresse:</strong> {{ $address->street ?? '' }} {{ $address->street_number ?? '' }}
@@ -69,13 +69,12 @@
                                         @endif
                                         <hr>
                                         <!-- Bilder -->
-                                        @if($portfolios->media()->where('type', 'image')->exists())
+                                        @if($portfolios && $portfolios->media()->where('type', 'image')->exists())
                                             <h4 class="mb-2">Zusätzliche Bilder:</h4>
                                             <div class="row mb-3">
                                                 @foreach($portfolios->media()->where('type', 'image')->get() as $image)
                                                     <div class="col-md-6">
-                                                        <img src="{{ url('upload/portfolio_images/'.$image->filename) }}"
-                                                             alt="portfolio-image" class="img-fluid">
+                                                        <img src="{{ asset('upload/portfolio_images/'.$image->filename) }}" alt="portfolio-image" class="img-fluid">
                                                     </div>
                                                 @endforeach
                                             </div>

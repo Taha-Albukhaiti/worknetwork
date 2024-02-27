@@ -1,12 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -72,25 +70,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/profile/change/password', [AdminController::class, 'adminChangePassword'])->name('admin.profile.change.password');
     Route::post('/admin/profile/store', [AdminController::class, 'adminProfileStore'])->name('admin.profile.store');
     Route::post('/admin/update/password', [AdminController::class, 'adminUpdatePassword'])->name('admin.update.password');
-
-    // Get all companies
     Route::get('/admin/companies', [AdminController::class, 'adminCompanies'])->name('admin.companies');
-    // Get a single user
     Route::get('/admin/user/{id}', [AdminController::class, 'adminUserShow'])->name('admin.user.show');
-    // Delete a single user
     Route::delete('/admin/user/delete/{id}', [AdminController::class, 'adminUserDelete'])->name('admin.user.delete');
-    // Get a single company
     Route::get('/admin/company/{id}', [AdminController::class, 'adminCompanyShow'])->name('admin.company.show');
-    // Delete a single company
     Route::delete('/admin/company/delete/{id}', [AdminController::class, 'adminCompanyDelete'])->name('admin.company.delete');
-    // Search for a user
     Route::get('/admin/search/user', [AdminController::class, 'adminSearchUser'])->name('admin.search.user');
-    // Search for a company
     Route::get('/admin/search/company', [AdminController::class, 'adminSearchCompany'])->name('admin.search.company');
-    //admin.load.more.users
     Route::get('/admin/load/more/users', [AdminController::class, 'loadMoreUsers'])->name('admin.load.more.users');
-
-
+    Route::get('/admin/load/more/companies', [AdminController::class, 'loadMoreCompanies'])->name('admin.load.more.companies');
 });
 
 Route::get('/user/login', [UserController::class, 'userLogin'])->name('user.login');
@@ -107,15 +95,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('user/portfolio/store', [UserController::class, 'userPortfolioStore'])->name('user.portfolio.store');
     // löschen des Portfolio-details objekt aus der Datenbank durch die methode deletePortfolioDetail() im UserController
     Route::delete('user/portfolio/delete/{id}', [UserController::class, 'deletePortfolioDetail'])->name('user.portfolio.delete');
-
     // Anfrage an das Profil eines Users senden
     Route::get('/profile-requests', [UserController::class, 'showProfileRequests'])->name('user.profile_requests');
     Route::post('/profile-request/{id}/accept', [UserController::class, 'acceptProfileRequest'])->name('user.accept_profile_request');
     Route::post('/profile-request/{id}/reject', [UserController::class, 'rejectProfileRequest'])->name('user.reject_profile_request');
-    // show the profile of a company
     Route::get('/company/{id}/profile', [UserController::class, 'companyProfileView'])->name('user.company.profile.show');
-
-
 });
 
 Route::get('/company/login', [CompanyController::class, 'companyLogin'])->name('company.login');
@@ -127,11 +111,7 @@ Route::middleware(['auth', 'role:company'])->group(function () {
     Route::get('/company/profile/change/password', [CompanyController::class, 'companyChangePassword'])->name('company.profile.change.password');
     Route::post('/company/profile/store', [CompanyController::class, 'companyProfileStore'])->name('company.profile.store');
     Route::post('/company/update/password', [CompanyController::class, 'companyUpdatePassword'])->name('company.update.password');
-    // accepted Users anzeigen
     Route::get('/company/accepted-users', [CompanyController::class, 'acceptedUsers'])->name('company.accepted.users');
-    // show the profile of a user
     Route::get('/company/user/{id}', [CompanyController::class, 'acceptedUserProfileView'])->name('company.user.accepted.show');
-
-
 });
 

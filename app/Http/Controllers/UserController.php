@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ProfileRequestAccepted;
-use App\Mail\ProfileRequestRejected;
+
 use App\Models\Address;
 use App\Models\CompanyProfile;
 use App\Models\PortfolioMedia;
@@ -11,257 +10,184 @@ use App\Models\ProfileRequest;
 use App\Models\User;
 use App\Models\Portfolio;
 use App\Models\PortfolioDetail;
-use Faker\Provider\Company;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
     public function userDashboard(): View
     {
-        $data = $this->getUserData();
-        $portfolios = $this->getPortfolios();
-        $address = $this->getAddress();
-        return view('user.index', compact('data', 'portfolios', 'address'));
+        $user = Auth::user();
+        $portfolios = $this->getUserPortfolios($user);
+        $address = $user->address;
+        return view('user.index', compact('user', 'portfolios', 'address'));
     }
 
-    private function getPortfolios()
+    private function getUserPortfolios(User $user)
     {
-        $id = Auth::user()->id;
-        return Portfolio::where('user_id', $id)->with('details')->first();
+        return Portfolio::where('user_id', $user->id)->with('details')->first();
     }
 
     public function userLogout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
         return redirect()->route('user.login');
     }
 
-
-    public function userLogin(): View|Application|Factory
+    public function userLogin(): View
     {
         return view('user.user_login');
     }
 
-    private function getUserData(): User
+    public function userProfile(): View
     {
-        $id = Auth::user()->id;
-        return User::find($id);
+        $user = Auth::user();
+        $address = Address::where('user_id', $user->id)->first();
+        return view('user.user_profile_view', compact('user', 'address'));
     }
 
-
-    public function userProfile(): View|Application|Factory
+    public function userPortfolio(): View
     {
-        $data = $this->getUserData();
-        $address = $this->getAddress();
-        return view('user.user_profile_view', compact('data', 'address'));
+        $user = Auth::user();
+        $portfolios = $user->portfolios()->with('details')->first();
+        $address = Address::where('user_id', $user->id)->first();
+        return view('user.user_portfolio_edit', compact('user', 'portfolios', 'address'));
     }
 
-    public function getAddress()
+    public function userProfileEdit(): View
     {
-        $id = Auth::user()->id;
-        return Address::where('user_id', $id)->first();
-    }
-
-    public function userPortfolio(): View|Application|Factory
-    {
-        $data = $this->getUserData();
-        $portfolios = $data->portfolios()->with('details')->get()->first();
-        $address = $this->getAddress();
-        return view('user.user_portfolio_edit', compact('data', 'portfolios', 'address'));
-    }
-
-    public function userProfileEdit(): View|Application|Factory
-    {
-        $data = $this->getUserData();
-        $portfolios = Portfolio::where('user_id', $data->id)->with('details')->first();
-        $address = $this->getAddress();
-        return view('user.user_profile_edit_view', compact('data', 'portfolios', 'address'));
+        $user = Auth::user();
+        $portfolios = Portfolio::where('user_id', $user->id)->with('details')->first();
+        $address = Address::where('user_id', $user->id)->first();
+        return view('user.user_profile_edit_view', compact('user', 'portfolios', 'address'));
     }
 
     public function userPortfolioStore(Request $request): RedirectResponse
     {
-        $id = Auth::user()->id;
+        $user = Auth::user();
+        // Validierung der Eingabe hier einfügen
 
-        DB::transaction(function () use ($id, $request) {
-            $data = User::find($id);
-            $data->username = $request->input('username');
-            $data->phone = $request->input('phone');
-            $data->email = $request->input('email');
+        DB::transaction(function () use ($user, $request) {
+            // Benutzerprofil aktualisieren
+            $user->update($request->only(['username', 'phone', 'email']));
+            // Foto verarbeiten
+            if ($request->hasFile('photo')) {
+                $user->photo = $this->uploadPhoto($request->file('photo'));
+            }
+            $user->save();
+            // Adresse aktualisieren oder erstellen
+            $user->address()->updateOrCreate([], $request->input('address'));
 
-            if ($request->file('photo')) {
-                $file = $request->file('photo');
-                @unlink(public_path('upload/user_images/' . $data->photo));
-                $filename = date('YmdHi') . $file->getClientOriginalName();
-                $file->move(public_path('upload/user_images'), $filename);
-                $data->photo = $filename;
+            // Portfolio verarbeiten
+            $portfolioData = $request->input('portfolios');
+            $portfolio = $user->portfolios()->first();
+            if (!$portfolio) {
+                $portfolio = new Portfolio();
+                $portfolio->user_id = $user->id;
+                $portfolio->save();
             }
 
-            $data->save();
-            $this->updateOrCreateAddress($id, $request);
+            // Portfolio Details verarbeiten
+            $this->updateOrCreatePortfolioDetails($portfolio, $portfolioData['details'] ?? []);
 
-            $portfolioData = [
-                'job_title' => $request->input('portfolios.job_title'),
-                'company' => $request->input('portfolios.company'),
-                'start_date' => $request->input('portfolios.start_date'),
-                'end_date' => $request->input('portfolios.end_date'),
-            ];
-
-            // Find existing portfolio or create a new one
-            $portfolio = Portfolio::updateOrCreate(['user_id' => $id], $portfolioData);
-
-            // Save or update portfolio details
-            $details = $request->input('portfolios.details');
-            foreach ($details as $detail) {
-                if (isset($detail['id'])) {
-                    // If detail has an ID, update it
-                    $portfolioDetail = PortfolioDetail::find($detail['id']);
-                    if ($portfolioDetail) {
-                        $portfolioDetail->type = $detail['type'];
-                        $portfolioDetail->content = $detail['content'];
-                        $portfolioDetail->save();
-                    }
-                } else {
-                    // If detail does not have an ID, create it
-                    $portfolioDetail = new PortfolioDetail();
-                    $portfolioDetail->portfolio_id = $portfolio->id;
-                    $portfolioDetail->type = $detail['type'];
-                    $portfolioDetail->content = $detail['content'];
-                    $portfolioDetail->save();
-                }
-            }
-
-            // Hochgeladene Bilder verarbeiten und speichern
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $filename = date('YmdHi') . '_' . $image->getClientOriginalName();
-                    $image->move(public_path('upload/portfolio_images'), $filename);
-                    $portfolioMedia = new PortfolioMedia();
-                    $portfolioMedia->portfolio_id = $portfolio->id;
-                    $portfolioMedia->type = 'image';
-                    $portfolioMedia->filename = $filename;
-                    $portfolioMedia->save();
-                }
-            }
-
-            // Hochgeladene Dateien verarbeiten und speichern
-            if ($request->hasFile('files')) {
-                foreach ($request->file('files') as $file) {
-                    $filename = date('YmdHi') . '_' . $file->getClientOriginalName();
-                    $file->move(public_path('upload/portfolio_files'), $filename);
-                    $portfolioMedia = new PortfolioMedia();
-                    $portfolioMedia->portfolio_id = $portfolio->id;
-                    $portfolioMedia->type = 'file';
-                    $portfolioMedia->filename = $filename;
-                    $portfolioMedia->save();
-                }
-            }
+            // Hochgeladene Bilder und Dateien verarbeiten
+            $this->processMediaUploads($portfolio, $request);
         });
 
-        $notification = [
-            'message' => 'Portfolio erfolgreich aktualisiert',
-            'alert-type' => 'success'
-        ];
+        return redirect()->back()->with(['message' => 'Portfolio erfolgreich aktualisiert', 'alert-type' => 'success']);
+    }
 
-        return redirect()->back()->with($notification);
+
+    private function uploadPhoto($file)
+    {
+        $filename = date('YmdHi') . '_' . $file->getClientOriginalName();
+        $file->move(public_path('upload/user_images'), $filename);
+        return $filename;
+    }
+
+    private function updateOrCreatePortfolioDetails($portfolio, $details): void
+    {
+        foreach ($details as $detail) {
+            $detailData = isset($detail['id']) ? ['type' => $detail['type'], 'content' => $detail['content']] : $detail;
+            $portfolio->details()->updateOrCreate(['id' => $detail['id'] ?? null], $detailData);#
+            $portfolio->save();
+        }
+    }
+
+    private function processMediaUploads($portfolio, $request): void
+    {
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $filename = date('YmdHi') . '_' . $image->getClientOriginalName();
+                $image->move(public_path('upload/portfolio_images'), $filename);
+                $portfolioMedia = new PortfolioMedia();
+                $portfolioMedia->portfolio_id = $portfolio->id;
+                $portfolioMedia->type = 'image';
+                $portfolioMedia->filename = $filename;
+                $portfolioMedia->save();
+            }
+        } elseif ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $filename = date('YmdHi') . '_' . $file->getClientOriginalName();
+                $file->move(public_path('upload/portfolio_files'), $filename);
+                $portfolioMedia = new PortfolioMedia();
+                $portfolioMedia->portfolio_id = $portfolio->id;
+                $portfolioMedia->type = 'file';
+                $portfolioMedia->filename = $filename;
+                $portfolioMedia->save();
+            }
+        }
+
+
     }
 
     public function userProfileStore(Request $request): RedirectResponse
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
-        $data->username = $request->username;
-        $data->name = $request->name;
-        $data->email = $request->email;
-        $data->phone = $request->phone;
-        // Die Adresse Klasse ist mit user verknüpft und hat als Fremdschlüssel die user_id
-        $this->updateOrCreateAddress($id, $request);
+        $user = Auth::user();
+        // Validierung der Eingabe hier einfügen
 
-
-        if ($request->file('photo')) {
-            $file = $request->file('photo');
-            @unlink(public_path('upload/user_images/' . $data->photo));
-            $filename = date('YmdHi') . $file->getClientOriginalName();
-            $file->move(public_path('upload/user_images'), $filename);
-            $data['photo'] = $filename;
+        // Benutzerprofil aktualisieren
+        $user->update($request->only(['username', 'name', 'email', 'phone']));
+        // Foto verarbeiten
+        if ($request->hasFile('photo')) {
+            $user->photo = $this->uploadPhoto($request->file('photo'));
         }
+        $user->save();
+        // Adresse aktualisieren oder erstellen
+        $user->address()->updateOrCreate([], $request->input('address'))->save();
 
-        $portfolio = Portfolio::with('details')->where('user_id', $id)->first();
-        // Save or update portfolio details if they exist with out duplicating
+        // Portfolio verarbeiten
+        $portfolio = $this->updateOrCreatePortfolio($user, $request->input('portfolios'));
 
-        if ($portfolio) {
-            $portfolio->job_title = $request->input('portfolios.job_title');
-            $portfolio->company = $request->input('portfolios.company');
-            $portfolio->start_date = $request->input('portfolios.start_date');
-            $portfolio->end_date = $request->input('portfolios.end_date');
-            $portfolio->save();
+        // Portfolio Details verarbeiten
+        $this->updateOrCreatePortfolioDetails($portfolio, $request->input('portfolios.details'));
 
-            $details = $request->input('portfolios.details');
-            foreach ($details as $detail) {
-                if (isset($detail['id'])) {
-                    $portfolioDetail = PortfolioDetail::find($detail['id']);
-                    if ($portfolioDetail) {
-                        $portfolioDetail->type = $detail['type'];
-                        $portfolioDetail->content = $detail['content'];
-                        $portfolioDetail->save();
-                    }
-                } else {
-                    $portfolioDetail = new PortfolioDetail();
-                    $portfolioDetail->portfolio_id = $portfolio->id;
-                    $portfolioDetail->type = $detail['type'];
-                    $portfolioDetail->content = $detail['content'];
-                    $portfolioDetail->save();
-                }
-            }
-        } else {
-            $portfolio = new Portfolio();
-            $portfolio->user_id = $id;
-            $portfolio->job_title = $request->input('portfolios.job_title');
-            $portfolio->company = $request->input('portfolios.company');
-            $portfolio->start_date = $request->input('portfolios.start_date');
-            $portfolio->end_date = $request->input('portfolios.end_date');
-        }
+        return redirect()->back()->with(['message' => 'Benutzerprofil erfolgreich aktualisiert', 'alert-type' => 'success']);
+    }
 
-        $portfolio->save();
-        $data->save();
 
-        $notification = [
-            'message' => 'Benutzerprofil erfolgreich aktualisiert',
-            'alert-type' => 'success'
-        ];
-
-        return redirect()->back()->with($notification);
+    private function updateOrCreatePortfolio($user, $portfolioData)
+    {
+        unset($portfolioData['details']);
+        return $user->portfolios()->updateOrCreate([], $portfolioData);
     }
 
     public function deletePortfolioDetail($id): \Illuminate\Http\JsonResponse
     {
-        $portfolioDetail = PortfolioDetail::find($id);
-        if ($portfolioDetail) {
-            $portfolioDetail->delete();
-            return response()->json(['message' => 'Portfolio Detail erfolgreich gelöscht'], 200);
-        }
-        return response()->json(['message' => 'Portfolio Detail nicht gefunden'], 404);
-
+        PortfolioDetail::findOrFail($id)->delete();
+        return response()->json(['message' => 'Portfolio Detail erfolgreich gelöscht'], 200);
     }
 
-    public function userChangePassword(): View|Application|Factory
+    public function userChangePassword(): View
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
-        return view('user.user_change_password', compact('data'));
+        $user = Auth::user();
+        return view('user.user_change_password', compact('user'));
     }
 
     public function userUpdatePassword(Request $request): RedirectResponse
@@ -271,44 +197,13 @@ class UserController extends Controller
             'new_password' => 'required|confirmed'
         ]);
 
-        if (!Hash::check($request->old_password, auth::user()->password)) {
-            $notification = array(
-                'message' => 'Das alte Passwort stimmt nicht überein',
-                'alert-type' => 'error'
-            );
-            return back()->with($notification);
+        if (!Hash::check($request->old_password, auth()->user()->password)) {
+            return back()->with(['message' => 'Das alte Passwort stimmt nicht überein', 'alert-type' => 'error']);
         }
 
-        User::whereId(Auth::user()->id)->update([
-            'password' => Hash::make($request->new_password)
-        ]);
+        auth()->user()->update(['password' => Hash::make($request->new_password)]);
 
-        $notification = array(
-            'message' => 'Passwort erfolgreich geändert',
-            'alert-type' => 'success'
-        );
-
-        return back()->with($notification);
-    }
-
-    /**
-     * @param $id
-     * @param Request $request
-     * @return void
-     */
-    public function updateOrCreateAddress($id, Request $request): void
-    {
-        $addressData = [
-            'street' => $request->input('address.street'),
-            'street_number' => $request->input('address.street_number'),
-            'city' => $request->input('address.city'),
-            'state' => $request->input('address.state'),
-            'zip' => $request->input('address.zip')
-        ];
-
-
-        $address = Address::updateOrCreate(['user_id' => $id], $addressData);
-        $address->save();
+        return back()->with(['message' => 'Passwort erfolgreich geändert', 'alert-type' => 'success']);
     }
 
     public function showProfileRequests()
@@ -318,44 +213,27 @@ class UserController extends Controller
         return view('user.profile_requests', compact('profileRequests'));
     }
 
-
     public function acceptProfileRequest($id)
     {
         $profileRequest = ProfileRequest::findOrFail($id);
-        $profileRequest->status = 'accepted';
-        $profileRequest->save();
-
+        $profileRequest->update(['status' => 'accepted']);
         // Mail::to($profileRequest->requestedUser->email)->send(mailable: new ProfileRequestAccepted($profileRequest));
-
-        $notification = array(
-            'message' => 'Profilanfrage akzeptiert',
-            'alert-type' => 'success'
-        );
-        return redirect()->back()->with($notification);
+        return redirect()->back()->with(['message' => 'Profilanfrage akzeptiert', 'alert-type' => 'success']);
     }
 
     public function rejectProfileRequest($id)
     {
         $profileRequest = ProfileRequest::findOrFail($id);
-        $profileRequest->status = 'rejected';
-        $profileRequest->save();
-
-        //Mail::to($profileRequest->requestedUser->email)->send(mailable: new ProfileRequestRejected($profileRequest));
-
-        $notification = array(
-            'message' => 'Profilanfrage abgelehnt',
-            'alert-type' => 'success'
-        );
-
-        return redirect()->back()->with($notification);
+        $profileRequest->update(['status' => 'rejected']);
+        // Mail::to($profileRequest->requestedUser->email)->send(mailable: new ProfileRequestRejected($profileRequest));
+        return redirect()->back()->with(['message' => 'Profilanfrage abgelehnt', 'alert-type' => 'success']);
     }
 
     public function companyProfileView($id)
     {
-        $data = User::find($id);
+        $user = User::findOrFail($id);
         $companyProfile = CompanyProfile::where('user_id', $id)->first();
-        $address = $data->address;
-        return \view('company_profile_show', compact('data', 'companyProfile', 'address'));
+        $address = $user->address;
+        return view('company_profile_show', compact('user', 'companyProfile', 'address'));
     }
-
 }

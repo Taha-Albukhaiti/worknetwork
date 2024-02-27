@@ -11,25 +11,25 @@
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" name="username" id="username"
-                               autocomplete="off" value="{{ $data->username }}">
+                               autocomplete="off" value="{{ $user->username }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" name="name" id="name"
-                               autocomplete="off" value="{{ $data->name }}">
+                               autocomplete="off" value="{{ $user->name }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Email address</label>
                         <input type="text" class="form-control" name="email" id="exampleInputEmail1"
-                               autocomplete="off" value="{{ $data->email }}">
+                               autocomplete="off" value="{{ $user->email }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone</label>
                         <input type="text" class="form-control" name="phone" id="phone"
-                               autocomplete="off" value="{{ $data->phone }}">
+                               autocomplete="off" value="{{ $user->phone }}">
                     </div>
 
                     <div class="mb-3">
@@ -39,7 +39,7 @@
 
                     <div class="mb-3">
                         <img id="showImage" class="wd-80 rounded-circle"
-                             src="{{ !empty($data->photo) ? url('upload/user_images/'.$data->photo) : url('upload/no_image.jpg')}}"
+                             src="{{ !empty($user->photo) ? url('upload/user_images/'.$user->photo) : url('upload/no_image.jpg')}}"
                              alt="profile">
                     </div>
 
@@ -54,35 +54,35 @@
                             <!-- Portfolio-Address -->
                             <!-- Address Section -->
                             <!-- Address ID hidden-->
-                            <input type="text" name="address_id"
+                            <input type="text" name="address[id]"
                                    value="{{ $address->id ?? '' }}" hidden>
                             <div class="mb-3">
                                 <label for="street" class="form-label">Street</label>
-                                <input type="text" class="form-control" id="street" name="portfolios[street]"
+                                <input type="text" class="form-control" id="address[street]" name="address[street]"
                                        value="{{ $address->street ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="street_number" class="form-label">Street Number</label>
-                                <input type="text" class="form-control" id="street_number"
-                                       name="portfolios[street_number]" value="{{ $address->street_number ?? '' }}">
+                                <input type="text" class="form-control" id="address[street_number]"
+                                       name="address[street_number]" value="{{ $address->street_number ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="zipcode" class="form-label">Zipcode</label>
-                                <input type="text" class="form-control" id="zipcode" name="portfolios[zipcode]"
-                                       value="{{ $address->zipcode ?? '' }}">
+                                <input type="text" class="form-control" id="address[zip]" name="address[zip]"
+                                       value="{{ $address->zip ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" name="portfolios[city]"
+                                <input type="text" class="form-control" id="address[city]" name="address[city]"
                                        value="{{ $address->city ?? '' }}">
                             </div>
 
                             <div class="mb-3">
                                 <label for="state" class="form-label">State</label>
-                                <input type="text" class="form-control" id="state" name="portfolios[state]"
+                                <input type="text" class="form-control" id="address[state]" name="address[state]"
                                        value="{{ $address->state ?? '' }}">
 
                             </div>
