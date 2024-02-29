@@ -15,6 +15,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class CompanyController - steuert die Anzeige des Dashboards und die Bearbeitung des Unternehmensprofils.
+ * @package App\Http\Controllers
+ * @version 1.0
+ * @since 1.0
+ * @autor Taha Al-Bukhaiti
+ */
 class CompanyController extends Controller
 {
     /**
@@ -171,8 +178,14 @@ class CompanyController extends Controller
      */
     public function getAddress(): Address
     {
+
         $id = Auth::user()->id;
-        return Address::where('user_id', $id)->first();
+        $address = Address::where('user_id', $id)->first();
+        // behandelt den Fall, dass das Unternehmen keine Adresse hat
+        if (!$address) {
+            $address = new Address();
+        }
+        return $address;
     }
 
     /**

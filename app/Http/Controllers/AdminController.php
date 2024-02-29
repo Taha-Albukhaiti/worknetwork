@@ -16,6 +16,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class AdminController - steuert die Anzeige des Admin-Dashboards und die Verwaltung von Benutzern und Unternehmen.
+ * @package App\Http\Controllers
+ * @version 1.0
+ * @since 1.0
+ * @autor Taha Al-Bukhaiti
+ */
 class AdminController extends Controller
 {
     /**
@@ -90,6 +97,7 @@ class AdminController extends Controller
         $users = User::where('role', 'user')->latest()->skip($skip)->take($perPage)->get();
         return response()->json(['users' => $users]);
     }
+
     /**
      * Lädt weitere Unternehmen für das Admin-Dashboard.
      *

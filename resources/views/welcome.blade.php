@@ -53,8 +53,10 @@
         <div class="container mt-5">
             <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin mt-4">
                 <div>
-                    <h4 class="mb-3 mb-md-0">Welcome to Work<a href="#" class="sidebar-brand"><span>Network</span></a>
-                    </h4>
+                    <h4 class="mb-3 mb-md-0">Willkommen bei Work<a href="#"
+                                                                   class="sidebar-brand"><span>Network</span></a></h4>
+                    <p class="text-muted">Hier können Sie Benutzerprofile durchsuchen und Unternehmensprofile
+                        anzeigen.</p>
                 </div>
                 <div class="d-flex align-items-center flex-wrap text-nowrap">
                     <div class="input-group flatpickr wd-200 me-2 mb-2 mb-md-0" id="dashboardDate">
@@ -78,7 +80,6 @@
                 </div>
             </div>
         </div>
-
         @include('cards')
 
         <!-- partial:partials/_footer.html -->

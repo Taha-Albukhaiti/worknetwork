@@ -13,9 +13,9 @@
 
                             <div>
                                 <img class="wd-100 rounded-circle"
-                                     src=" {{ !empty($data->photo) ? url('upload/user_images/'.$data->photo) : url('upload/no_image.jpg')}}"
+                                     src=" {{ !empty($user->photo) ? url('upload/user_images/'.$user->photo) : url('upload/no_image.jpg')}}"
                                      alt="profile">
-                                <span class="h4 ms-3 ">{{ $data->username }}</span>
+                                <span class="h4 ms-3 ">{{ $user->username }}</span>
                             </div>
 
                             <div class="dropdown">
@@ -40,15 +40,15 @@
                         </div>
                         <div class="mt-3">
                             <label class="tx-11 fw-bolder mb-0 text-uppercase">Name:</label>
-                            <p class="text-muted">{{ $data->name }}</p>
+                            <p class="text-muted">{{ $user->name }}</p>
                         </div>
                         <div class="mt-3">
                             <label class="tx-11 fw-bolder mb-0 text-uppercase">Email:</label>
-                            <p class="text-muted">{{ $data->email }}</p>
+                            <p class="text-muted">{{ $user->email }}</p>
                         </div>
                         <div class="mt-3">
                             <label class="tx-11 fw-bolder mb-0 text-uppercase">phone:</label>
-                            <p class="text-muted">{{ $data->phone }}</p>
+                            <p class="text-muted">{{ $user->phone }}</p>
                         </div>
                         <div class="mt-3 d-flex social-links">
                             <a href="javascript:;" class="btn btn-icon border btn-xs me-2">

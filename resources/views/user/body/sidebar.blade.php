@@ -23,7 +23,7 @@
                 <a class="nav-link" data-bs-toggle="collapse" href="#userMenu" role="button" aria-expanded="false"
                    aria-controls="adminMenu">
                     <i class="link-icon" data-feather="user"></i>
-                    <span class="link-title">Admin</span>
+                    <span class="link-title">Functionality</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
                 <div class="collapse" id="userMenu">

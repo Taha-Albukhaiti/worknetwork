@@ -95,11 +95,11 @@
                             <!-- Profilbild -->
                             <div class="text-center mb-4">
                                 <img class="profile-img"
-                                     src="{{ !empty($data->photo) ? url('upload/company_images/'.$data->photo) : url('upload/no_image.jpg')}}"
+                                     src="{{ !empty($user->photo) ? url('upload/company_images/'.$user->photo) : url('upload/no_image.jpg')}}"
                                      alt="profile">
                             </div>
 
-                            <h2 class="text-center mb-4">  {{ $data->username ?? '' }}</h2>
+                            <h2 class="text-center mb-4">  {{ $user->username ?? '' }}</h2>
 
                             <div class="row">
                                 <!-- Company Kontaktdaten -->
@@ -108,10 +108,10 @@
                                         <div class="card-body">
                                             <h2 style="font-size: 30px;" class="card-title mb-4"><strong>Company
                                                     Kontaktdaten</strong></h2>
-                                            <p><strong>Username:</strong> {{ $data->username ?? '' }}</p>
-                                            <p><strong>Name:</strong> {{ $data->name ?? '' }}</p>
-                                            <p><strong>Email:</strong> {{ $data->email ?? '' }}</p>
-                                            <p><strong>Phone:</strong> {{ $data->phone ?? '' }}</p>
+                                            <p><strong>Username:</strong> {{ $user->username ?? '' }}</p>
+                                            <p><strong>Name:</strong> {{ $user->name ?? '' }}</p>
+                                            <p><strong>Email:</strong> {{ $user->email ?? '' }}</p>
+                                            <p><strong>Phone:</strong> {{ $user->phone ?? '' }}</p>
                                             <hr>
                                             <p>
                                                 <strong>Adresse:</strong> {{ $address->street ?? '' }} {{ $address->street_number ?? '' }}

@@ -129,21 +129,31 @@
                                             <label class="form-label"><h4>Details:</h4></label>
                                             @foreach($portfolios->details as $index => $detail)
                                                 <div class="detailSet mb-3">
-                                                    <label class="form-label
-                                                    ">Titel der Content: {{ $detail->type }}</label>
+                                                    <br>
+                                                    <h5><label class="form-label
+                                                    ">Titel der Content: {{ $detail->type }}</label></h5>
+
                                                     <input type="hidden" name="portfolios[details][{{ $index }}][id]"
                                                            value="{{ $detail->id }}">
+
                                                     <input type="text"
                                                            name="portfolios[details][{{ $index }}][type]"
                                                            value="{{ $detail->type }}" class="form-control">
-                                                    <label class="form-label
-                                                    mb-2">Content</label>
+
+                                                    <h5><label class="form-label mb-2 mt-2">Content</label></h5>
+
                                                     <textarea name="portfolios[details][{{ $index }}][content]"
                                                               class="form-control"
                                                               required>{{ $detail->content }}</textarea>
-                                                    <button type="button" class="btn btn-danger btn-sm delete-detail-btn"
-                                                            data-detail-id="{{ $detail->id }}">Delete
-                                                    </button>
+
+                                                    <div class="detailSet mb-3">
+                                                        <button type="button"
+                                                                class="btn btn-outline-danger btn-sm delete-detail-btn mt-2"
+                                                                data-detail-id="{{ $detail->id }}">Delete
+                                                        </button>
+
+                                                    </div>
+                                                    <hr>
                                                 </div>
 
                                             @endforeach
@@ -263,25 +273,28 @@
             detailIndex++;
         }
 
+
         $(document).on('click', '.delete-detail-btn', function () {
             let detailId = $(this).data('detail-id');
             if (confirm('Are you sure to delete this detail?')) {
                 $.ajax({
-                    url: '{{ route('user.portfolio.delete', ['id' => 'detailId'])}}',
-                    type: 'POST',
+                    url: '{{ route('user.detail.delete', ['id' => '__detail_id__']) }}'.replace('__detail_id__', detailId), // Use route() helper function to generate the URL
+                    type: 'DELETE',
                     data: {
-                        _token: '{{ csrf_token() }}',
-                        detailId: detailId
+                        _token: '{{ csrf_token() }}'
                     },
                     success: function (response) {
-                        if (response.status) {
-                            alert(response.message);
+                        if (response.status === 'success') {
+                            $(this).closest('.detailSet').remove();
                             location.reload();
                         }
                     }
+
+
                 });
             }
         });
+
 
         // Zeige die Dateien oder additonalen Bilder an
         $(document).on('change', '#image', function (e) {

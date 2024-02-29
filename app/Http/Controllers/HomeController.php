@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\CompanyProfile;
 use App\Models\User;
 use Illuminate\Contracts\View\Factory;
@@ -10,6 +11,13 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Class HomeController - steuert die Anzeige der Startseite und die Suche nach Benutzern und Unternehmen.
+ * @package App\Http\Controllers
+ * @version 1.0
+ * @since 1.0
+ * @author Taha Al-Bukhaiti
+ */
 class HomeController extends Controller
 {
     /**
@@ -35,10 +43,22 @@ class HomeController extends Controller
         $search = $request->get('search');
         $usersQuery = User::where('role', 'user');
 
+
         if (!empty($search)) {
             $usersQuery->whereHas('portfolios', function ($query) use ($search) {
                 $query->where('job_title', 'like', '%' . $search . '%');
+                $query->orWhere('company', 'like', '%' . $search . '%');
+
             });
+
+            $usersQuery->orWhere('name', 'like', '%' . $search . '%');
+            $usersQuery->orWhere('username', 'like', '%' . $search . '%');
+            $usersQuery->orWhere('email', 'like', '%' . $search . '%');
+            $usersQuery->orWhere('phone', 'like', '%' . $search . '%');
+            $address = Address::all();
+            $address = $address->where('city', 'like', '%' . $search . '%');
+            $usersQuery->orWhereIn('address_id', $address->pluck('id'));
+
         }
 
         $users = $usersQuery->get();
@@ -100,10 +120,10 @@ class HomeController extends Controller
      */
     public function companyProfileView($id)
     {
-        $data = User::find($id);
+        $user = User::find($id);
         $address = $this->getAddress($id);
         $companyProfile = CompanyProfile::where('user_id', $id)->first();
-        return view('company_profile_show', compact('data', 'address', 'companyProfile'));
+        return view('company_profile_show', compact('user', 'address', 'companyProfile'));
     }
 
     /**
