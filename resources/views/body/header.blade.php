@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-light d-flex align-items-center">
+<nav class="navbar navbar-expand-lg navbar-light">
     <a href="#" class="sidebar-toggler">
         <i data-feather="menu"></i>
     </a>
-    <div class="navbar-content">
+    <div class="navbar-content d-flex align-items-center">
         <form class="search-form">
             <div class="input-group">
                 <div class="input-group-text">
@@ -13,21 +13,23 @@
         </form>
         <ul class="navbar-nav">
             <li class="nav-item dropdown">
-                <div class="fixed-md-bottom p-4 text-right">
+                <div class="fixed-md-bottom p-4 text-right d-flex align-items-center">
                     @if (Route::has('login'))
                         @auth
                             @if(Auth::user()->role == 'company')
-                                <a href="{{ route('company.dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
+                                <a href="{{ route('company.dashboard') }}" class="btn btn-outline-primary me-2">Dashboard</a>
                             @elseif(Auth::user()->role == 'user')
-                                <a href="{{ route('user.dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
+                                <a href="{{ route('user.dashboard') }}" class="btn btn-outline-primary me-2">Dashboard</a>
                             @elseif(Auth::user()->role == 'admin')
-                                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
+                                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary me-2">Dashboard</a>
                             @endif
                         @else
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary">Log in</a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="btn btn-outline-primary">Register</a>
-                            @endif
+                            <div class="d-flex align-items-center">
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="btn btn-outline-primary me-2">Register</a>
+                                @endif
+                                <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Login</a>
+                            </div>
                         @endauth
                     @endif
                 </div>
