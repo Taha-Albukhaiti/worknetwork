@@ -27,9 +27,9 @@ Route::get('/company/{id}/profile-view', [HomeController::class, 'companyProfile
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         if (Auth::check()) {
-            if (Auth::user()->hasRole('admin')) {
+            if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
-            } elseif (Auth::user()->hasRole('user')) {
+            } elseif (Auth::user()->role === 'user') {
                 return redirect()->route('user.dashboard');
             } elseif (Auth::user()->role === 'company') {
                 return redirect()->route('company.dashboard');

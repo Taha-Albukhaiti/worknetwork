@@ -1,12 +1,21 @@
 <nav class="navbar navbar-expand-lg navbar-light d-flex align-items-center">
-    <!-- ... Navbar-Inhalt ... -->
-    <div class="navbar-content ">
+    <a href="#" class="sidebar-toggler">
+        <i data-feather="menu"></i>
+    </a>
+    <div class="navbar-content">
+        <form class="search-form">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <i data-feather="search"></i>
+                </div>
+                <input type="text" class="form-control" id="navbarForm" placeholder="Search here...">
+            </div>
+        </form>
         <ul class="navbar-nav">
             <li class="nav-item dropdown">
                 <div class="fixed-md-bottom p-4 text-right">
                     @if (Route::has('login'))
                         @auth
-                            <!-- If the user is authenticated and has a recognized role, render the appropriate dashboard -->
                             @if(Auth::user()->role == 'company')
                                 <a href="{{ route('company.dashboard') }}" class="btn btn-outline-primary">Dashboard</a>
                             @elseif(Auth::user()->role == 'user')

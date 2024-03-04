@@ -10,11 +10,18 @@
         margin-bottom: 10px;
     }
     .profile-img {
-        width: 950px;
-        height: 450px;
+        max-width: 100%;
+        height: auto;
         object-fit: cover;
         border-radius: 50%;
     }
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
 </style>
 
 <div class="container">
@@ -23,11 +30,9 @@
             <div class="card">
                 <div class="card-body">
                     <!-- Profilbild -->
-                    <div class="text-center mb-4">
-                        <img class="profile-img" src="{{ !empty($data->photo) ? url('upload/company_images/'.$data->photo) : url('upload/no_image.jpg')}}"
-                             alt="profile">
-                    </div>
-
+                    <img class="profile-img" src="{{ !empty($data->photo) ? url('upload/company_images/'.$data->photo) : url('upload/no_image.jpg')}}"
+                         alt="profile">
+                    <br>
                     <h2 class="text-center mb-4">  {{ $data->username ?? '' }}</h2>
 
                     <div class="row">
