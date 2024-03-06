@@ -10,7 +10,7 @@
         margin-bottom: 10px;
     }
     .profile-img {
-        max-width: 100%;
+        max-width: 30%;
         height: auto;
         object-fit: cover;
         border-radius: 50%;

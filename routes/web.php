@@ -14,7 +14,12 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Hier werden die Web-Routen registriert und den Controllern zugewiesen.
+| Diese Routen werden vom RouteServiceProvider geladen, der die Routen innerhalb einer Gruppe enthält.
+| Diese Gruppe erhält den "web" Middleware, das CSRF-Schutz, Sitzungsstatus und Cookie-Authentifizierung enthält.
 |
+| @author Taha Al-Bukhaiti
+| @version 1.0
+| @since 1.0
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('welcome');

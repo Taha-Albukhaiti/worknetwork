@@ -1,26 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<style>
-    .card {
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-
-    .card-body {
-        font-size: 18px;
-    }
-
-    .card p {
-        margin-bottom: 10px;
-    }
-
-    .profile-img {
-        width: 950px;
-        height: 450px;
-        object-fit: cover;
-        border-radius: 50%;
-    }
-</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,27 +18,48 @@
     <!-- End fonts -->
 
     <!-- core:css -->
-    <link rel="stylesheet" href="{{asset('/backend/assets/vendors/core/core.css')}}">
+    <link rel="stylesheet" href="{{asset('/backend/vendors/core/core.css')}}">
     <!-- endinject -->
 
     <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="{{asset('/backend/assets/vendors/flatpickr/flatpickr.min.css')}}">
+    <link rel="stylesheet" href="{{asset('/backend/vendors/flatpickr/flatpickr.min.css')}}">
     <!-- End plugin css for this page -->
 
     <!-- inject:css -->
-    <link rel="stylesheet" href="{{asset('/backend/assets/fonts/feather-font/css/iconfont.css')}}">
-    <link rel="stylesheet" href="{{asset('/backend/assets/vendors/flag-icon-css/css/flag-icon.min.css')}}">
+    <link rel="stylesheet" href="{{asset('/backend/fonts/feather-font/css/iconfont.css')}}">
+    <link rel="stylesheet" href="{{asset('/backend/vendors/flag-icon-css/css/flag-icon.min.css')}}">
     <!-- endinject -->
 
     <!-- Layout styles -->
-    <link rel="stylesheet" href="{{asset('/backend/assets/css/demo2/style.css')}}">
+    <link rel="stylesheet" href="{{asset('/backend/css/demo2/style.css')}}">
     <!-- End layout styles -->
 
-    <link rel="shortcut icon" href="{{asset('/backend/assets/images/favicon.png')}}"/>
-
+    <link rel="shortcut icon" href="{{asset('/backend/images/favicon.png')}}"/>
 
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+    <style>
+        .card {
+            padding: 30px;
+            margin-bottom: 30px;
+        }
 
+        .card p {
+            margin-bottom: 10px;
+        }
+        .profile-img {
+            max-width: 30%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -86,19 +86,15 @@
 
         </div>
 
-
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <!-- Profilbild -->
-                            <div class="text-center mb-4">
-                                <img class="profile-img"
-                                     src="{{ !empty($user->photo) ? url('upload/company_images/'.$user->photo) : url('upload/no_image.jpg')}}"
-                                     alt="profile">
-                            </div>
-
+                            <img class="profile-img" src="{{ !empty($user->photo) ? url('upload/company_images/'.$user->photo) : url('upload/no_image.jpg')}}"
+                                 alt="profile">
+                            <br>
                             <h2 class="text-center mb-4">  {{ $user->username ?? '' }}</h2>
 
                             <div class="row">
@@ -106,8 +102,7 @@
                                 <div class="col-md-6">
                                     <div class="card mb-4">
                                         <div class="card-body">
-                                            <h2 style="font-size: 30px;" class="card-title mb-4"><strong>Company
-                                                    Kontaktdaten</strong></h2>
+                                            <h2 style="font-size: 30px;" class="card-title mb-4"><strong>Company Kontaktdaten</strong></h2>
                                             <p><strong>Username:</strong> {{ $user->username ?? '' }}</p>
                                             <p><strong>Name:</strong> {{ $user->name ?? '' }}</p>
                                             <p><strong>Email:</strong> {{ $user->email ?? '' }}</p>
@@ -127,13 +122,9 @@
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-body">
-                                            <h2 style="font-size: 30px;" class="card-title mb-4"><strong>Company Profile
-                                                    Information</strong></h2>
-                                            <p><strong>Company
-                                                    Website:</strong> {{ $companyProfile->company_website ?? '' }}</p>
-                                            <p><strong>Company
-                                                    Description:</strong> {{ $companyProfile->company_description ?? '' }}
-                                            </p>
+                                            <h2 style="font-size: 30px;" class="card-title mb-4"><strong>Company Profile Information</strong></h2>
+                                            <p><strong>Company Website:</strong> {{ $companyProfile->company_website ?? '' }}</p>
+                                            <p><strong>Company Description:</strong> {{ $companyProfile->company_description ?? '' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -145,6 +136,7 @@
         </div>
 
 
+
         <!-- partial:partials/_footer.html -->
         @include('body.footer')
         <!-- partial -->
@@ -152,22 +144,23 @@
 </div>
 
 
+
 <!-- core:js -->
-<script src="{{asset('/backend/assets/vendors/core/core.js')}}"></script>
+<script src="{{asset('/backend/vendors/core/core.js')}}"></script>
 <!-- endinject -->
 
 <!-- Plugin js for this page -->
-<script src="{{asset('/backend/assets/vendors/flatpickr/flatpickr.min.js')}}"></script>
-<script src="{{asset('/backend/assets/vendors/apexcharts/apexcharts.min.js')}}"></script>
+<script src="{{asset('/backend/vendors/flatpickr/flatpickr.min.js')}}"></script>
+<script src="{{asset('/backend/vendors/apexcharts/apexcharts.min.js')}}"></script>
 <!-- End plugin js for this page -->
 
 <!-- inject:js -->
-<script src="{{asset('/backend/assets/vendors/feather-icons/feather.min.js')}}"></script>
-<script src="{{asset('/backend/assets/js/template.js')}}"></script>
+<script src="{{asset('/backend/vendors/feather-icons/feather.min.js')}}"></script>
+<script src="{{asset('/backend/js/template.js')}}"></script>
 <!-- endinject -->
 
 <!-- Custom js for this page -->
-<script src="{{asset('/backend/assets/js/dashboard-dark.js')}}"></script>
+<script src="{{asset('/backend/js/dashboard-dark.js')}}"></script>
 <!-- End custom js for this page -->
 
 

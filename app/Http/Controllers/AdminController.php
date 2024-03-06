@@ -26,15 +26,21 @@ use Illuminate\Support\Facades\Hash;
 class AdminController extends Controller
 {
     /**
+     * Anzahl der Benutzer pro Seite.
+     *
+     * @var int
+     */
+    public static $usersPerPage = 3;
+
+    /**
      * Zeigt das Admin-Dashboard und liefert die Informationen über die Anzahl der Benutzer, Unternehmen und Profile und ihre Daten.
      *
      * @return View
      */
     public function adminDashboard(): View
     {
-
-        $users = User::where('role', 'user')->latest()->take(4)->get();
-        $companies = User::where('role', 'company')->latest()->take(4)->get();
+        $users = User::where('role', 'user')->latest()->take(self::$usersPerPage)->get();
+        $companies = User::where('role', 'company')->latest()->take(self::$usersPerPage)->get();
         return view('admin.index', compact('users', 'companies'));
     }
 
@@ -46,7 +52,7 @@ class AdminController extends Controller
      */
     public function adminSearchUser(Request $request): View|Application|Factory
     {
-        $search = $request->get('search');
+        $search = $request->get('searchUser');
         $usersQuery = User::where('role', 'user');
 
         if (!empty($search)) {
@@ -56,8 +62,8 @@ class AdminController extends Controller
             });
         }
 
-        $users = $usersQuery->latest()->take(4)->get();
-        $companies = User::where('role', 'company')->latest()->take(4)->get();
+        $users = $usersQuery->latest()->take(self::$usersPerPage)->get();
+        $companies = User::where('role', 'company')->latest()->take(self::$usersPerPage)->get();
         return view('admin.index', compact('users', 'companies'));
     }
 
@@ -69,7 +75,7 @@ class AdminController extends Controller
      */
     public function adminSearchCompany(Request $request): View|Application|Factory
     {
-        $search = $request->get('search');
+        $search = $request->get('searchCompany');
         $companiesQuery = User::where('role', 'company');
 
         if (!empty($search)) {
@@ -80,7 +86,7 @@ class AdminController extends Controller
         }
 
         $companies = $companiesQuery->latest()->take(4)->get();
-        $users = User::where('role', 'user')->latest()->take(4)->get();
+        $users = User::where('role', 'user')->latest()->take(self::$usersPerPage)->get();
         return view('admin.index', compact('users', 'companies'));
     }
 
@@ -93,8 +99,8 @@ class AdminController extends Controller
     public function loadMoreUsers(Request $request): JsonResponse
     {
         $skip = $request->skip;
-        $perPage = 4;
-        $users = User::where('role', 'user')->latest()->skip($skip)->take($perPage)->get();
+        // bei take() wird die Anzahl der Benutzer pro Seite festgelegt, falls es nur noch weniger im datenbank gibt als die Anzahl der Benutzer pro Seite, dann werden die restlichen Benutzer geladen
+        $users = User::where('role', 'user')->latest()->skip($skip)->take(self::$usersPerPage)->get();
         return response()->json(['users' => $users]);
     }
 
@@ -107,8 +113,7 @@ class AdminController extends Controller
     public function loadMoreCompanies(Request $request): JsonResponse
     {
         $skip = $request->skip;
-        $perPage = 4;
-        $companies = User::where('role', 'company')->latest()->skip($skip)->take($perPage)->get();
+        $companies = User::where('role', 'company')->latest()->skip($skip)->take(self::$usersPerPage)->get();
         return response()->json(['companies' => $companies]);
     }
 
@@ -147,8 +152,7 @@ class AdminController extends Controller
      */
     public function adminProfile(): View|Application|Factory
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
+        $data = $this->getUser($this->getAuthUserId());
         return view('admin.admin_profile_view', compact('data'));
     }
 
@@ -159,8 +163,7 @@ class AdminController extends Controller
      */
     public function adminProfileEdit(): View|Application|Factory
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
+        $data = $this->getUser($this->getAuthUserId());
         return view('admin.admin_profile_edit_view', compact('data'));
     }
 
@@ -172,8 +175,7 @@ class AdminController extends Controller
      */
     public function adminProfileStore(Request $request): RedirectResponse
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
+        $data = $this->getUser($this->getAuthUserId());
         $data->username = $request->username;
         $data->name = $request->name;
         $data->email = $request->email;
@@ -202,8 +204,7 @@ class AdminController extends Controller
      */
     public function adminChangePassword(): View|Application|Factory
     {
-        $id = Auth::user()->id;
-        $data = User::find($id);
+        $data = User::find($this->getAuthUserId());
         return view('admin.admin_change_password', compact('data'));
     }
 
@@ -239,7 +240,6 @@ class AdminController extends Controller
 
         return back()->with($notification);
     }
-
 
     /**
      * Zeigt die Liste der Unternehmen und ihre CompanyProfile.
@@ -292,32 +292,39 @@ class AdminController extends Controller
         $user = $this->getUser($id);
         $userAddress = $user->address;
         $userPortfolio = Portfolio::where('user_id', $id)->first();
-        $userPortfolioDetails = PortfolioDetail::where('portfolio_id', $userPortfolio->id)->get();
-        $userPortfolioMedia = PortfolioMedia::where('portfolio_id', $userPortfolio->id)->get();
-        if ($userPortfolioMedia) {
-            foreach ($userPortfolioMedia as $userPortfolioMedium) {
-                @unlink(public_path('upload/portfolio_media/' . $userPortfolioMedium->image));
-                $userPortfolioMedium->delete();
-            }
-        }
-        if ($userPortfolioDetails) {
-            foreach ($userPortfolioDetails as $userPortfolioDetail) {
-                @unlink(public_path('upload/portfolio_details/' . $userPortfolioDetail->image));
-                $userPortfolioDetail->delete();
-            }
-        }
+
         if ($userPortfolio) {
+            $userPortfolioDetails = PortfolioDetail::where('portfolio_id', $userPortfolio->id)->get();
+            $userPortfolioMedia = PortfolioMedia::where('portfolio_id', $userPortfolio->id)->get();
+
+            if ($userPortfolioMedia) {
+                foreach ($userPortfolioMedia as $userPortfolioMedium) {
+                    @unlink(public_path('upload/portfolio_media/' . $userPortfolioMedium->image));
+                    $userPortfolioMedium->delete();
+                }
+            }
+
+            if ($userPortfolioDetails) {
+                foreach ($userPortfolioDetails as $userPortfolioDetail) {
+                    @unlink(public_path('upload/portfolio_details/' . $userPortfolioDetail->image));
+                    $userPortfolioDetail->delete();
+                }
+            }
+
             @unlink(public_path('upload/portfolio_images/' . $userPortfolio->image));
             $userPortfolio->delete();
         }
+
         if ($userAddress) {
             $userAddress->delete();
         }
+
         $user->delete();
-        $notification = array(
+
+        $notification = [
             'message' => 'Benutzer erfolgreich gelöscht',
             'alert-type' => 'success'
-        );
+        ];
         return redirect()->back()->with($notification);
     }
 
@@ -357,5 +364,15 @@ class AdminController extends Controller
     public function getUser($id): mixed
     {
         return User::find($id);
+    }
+
+    /**
+     * Gibt die ID des eingeloggten Benutzers zurück.
+     *
+     * @return mixed
+     */
+    public function getAuthUserId()
+    {
+        return Auth::user()->id;
     }
 }

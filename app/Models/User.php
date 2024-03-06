@@ -13,6 +13,7 @@ use App\Models\CompanyProfile;
 
 /**
  * @property mixed $id
+ * @method static find($id)
  */
 class User extends Authenticatable
 {

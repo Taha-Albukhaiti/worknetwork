@@ -7,9 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
-/**
- * @method static where(string $string, mixed $id)
- */
 class Portfolio extends Model
 {
     use HasFactory;

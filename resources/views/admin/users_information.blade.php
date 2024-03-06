@@ -7,10 +7,11 @@
                     <form id="searchUserForm" action="{{ route('admin.search.user') }}" method="GET">
                         @csrf
                         <div class="input-group mb-3">
-                            <input id="searchUserInput" name="search" type="text"
+                            <input id="searchUserInput" name="searchUser" type="text"
                                    class="form-control bg-transparent border-primary flatpickr-input"
-                                   placeholder="Search...">
-                            <button class="btn btn-light" type="submit">Search</button>
+
+                                   placeholder="Search..." value="{{ request()->input('searchUser') }}">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
                         </div>
                     </form>
 
@@ -79,10 +80,10 @@
                     <form id="searchCompanyForm" action="{{ route('admin.search.company') }}" method="GET">
                         @csrf
                         <div class="input-group mb-3">
-                            <input id="searchCompanyInput" name="search" type="text"
+                            <input id="searchCompanyInput" name="searchCompany" type="text"
                                    class="form-control bg-transparent border-primary flatpickr-input"
-                                   placeholder="Search name or username...">
-                            <button class="btn btn-light" type="submit">Search</button>
+                                   placeholder="Search name or username..." value="{{ request()->input('searchCompany') }}">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
                         </div>
                     </form>
                     <div class="table-responsive">

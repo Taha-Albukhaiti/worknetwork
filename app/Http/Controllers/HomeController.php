@@ -40,7 +40,7 @@ class HomeController extends Controller
      */
     public function searchUser(Request $request): Application|View|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $search = $request->get('search');
+        $search = $request->get('searchUser');
         $usersQuery = User::where('role', 'user');
 
 
@@ -75,7 +75,7 @@ class HomeController extends Controller
      */
     public function searchCompany(Request $request): Application|View|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $search = $request->get('search');
+        $search = $request->get('searchCompany');
         $companiesProfile = User::where('role', 'company')->where('name', 'like', '%' . $search . '%')->get();
         $users = User::where('role', 'user')->get();
         return view('welcome', compact('users', 'companiesProfile'));
@@ -89,8 +89,8 @@ class HomeController extends Controller
      */
     public function userProfileRequest($id): RedirectResponse
     {
-        $user = User::find($id);
-        $requestedUser = User::find(auth()->id());
+        $user = $this->findUser($id);
+        $requestedUser = $this->findUser(auth()->id());
 
         if ($user && $requestedUser) {
             $profileRequest = $user->profileRequests()->where('requested_user_id', $requestedUser->id)->first();
@@ -118,9 +118,9 @@ class HomeController extends Controller
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|Factory|View|Application
      */
-    public function companyProfileView($id)
+    public function companyProfileView($id): Application|View|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $user = User::find($id);
+        $user = $this->findUser($id);
         $address = $this->getAddress($id);
         $companyProfile = CompanyProfile::where('user_id', $id)->first();
         return view('company_profile_show', compact('user', 'address', 'companyProfile'));
@@ -134,8 +134,18 @@ class HomeController extends Controller
      */
     public function getAddress($id): mixed
     {
-        $address = User::find($id)->address;
+        $address = $this->findUser($id)->address;
         return $address;
     }
 
+    /**
+     * Gibt einen Benutzer zurück.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function findUser($id): mixed
+    {
+        return User::find($id);
+    }
 }

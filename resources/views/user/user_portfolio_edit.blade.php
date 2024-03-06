@@ -194,7 +194,7 @@
                                             @foreach($portfolios->media()->where('type', 'image')->get() as $image)
                                                 <img src="{{ url('upload/portfolio_images/'.$image->filename) }}"
                                                      alt="portfolio-image" class="img-fluid"
-                                                     width="400" height="400">
+                                                     width="200" height="200">
                                             @endforeach
                                         </div>
                                     @endif

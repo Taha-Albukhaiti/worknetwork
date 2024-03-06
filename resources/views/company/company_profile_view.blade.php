@@ -49,6 +49,25 @@
                             <label class="tx-11 fw-bolder mb-0 text-uppercase">phone:</label>
                             <p class="text-muted">{{ $data->phone }}</p>
                         </div>
+
+                        <div class="mt-3">
+                            <label class="tx-11 fw-bolder mb-0 text-uppercase">Address:</label>
+                            <p class="text-muted ">{{ $address->street }} {{ $address->street_number }}</p>
+                            <p class="text-muted
+                            ">{{ $address->zip }} {{ $address->city }}</p>
+                            <p class="text-muted
+                            ">{{ $address->state }}</p>
+                        </div>
+                        <div class="mt-3">
+                            <label class="tx-11 fw-bolder mb-0 text-uppercase">Description:</label>
+                            <p class="text-muted
+                            ">{{ $companyProfile->company_description }}</p>
+                        </div>
+                        <div class="mt-3">
+                            <label class="tx-11 fw-bolder mb-0 text-uppercase">Website:</label>
+                            <p class="text-muted
+                            ">{{$companyProfile->company_website }}</p>
+                        </div>
                         <div class="mt-3 d-flex social-links">
                             <a href="javascript:;" class="btn btn-icon border btn-xs me-2">
                                 <i data-feather="github"></i>
